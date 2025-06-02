@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Life Reminders - Never Miss What Matters</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #F3E9E9 0%, #E8D5E8 100%);
+            min-height: 100vh;
+        }
+        
+        .font-handwriting {
+            font-family: 'Kalam', cursive;
+        }
+        
+        /* Reminder Styles */
+        .reminder-card {
+            background: linear-gradient(135deg, #F3E9E9 0%, #E8D5E8 100%);
+            border: 1px solid rgba(75, 46, 94, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .reminder-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(75, 46, 94, 0.15);
+        }
+        
+        /* Category Cards */
+        .category-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .category-card:hover {
+            transform: scale(1.05);
+        }
+
+        .logo-image {
+            width: 110px;
+            height: 100px;
+            object-fit: contain;
+        }
+        
+        /* Feature Navigation Styles */
+        .feature-item {
+            transition: all 0.3s ease;
+            color: #7a5a5a;
+            padding: 12px;
+            border-radius: 8px;
+        }
+        
+        .feature-item:hover {
+            color: #a87f7f;
+            background-color: rgba(168, 127, 127, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .feature-item.active {
+            color: #a87f7f;
+            background-color: rgba(168, 127, 127, 0.15);
+            font-weight: 600;
+        }
+        
+        /* Modal Styles */
+        .modal {
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+        
+        /* Loading Animation */
+        .loading-spinner {
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #A94EBD;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Floating Animation */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(1deg); }
+            50% { transform: translateY(-5px) rotate(-1deg); }
+        }
+        
+        .animate-float {
+            animation: float 4s ease-in-out infinite;
+        }
+        
+        /* Glassmorphism Effect */
+        .glass {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+        
+        /* Priority Colors */
+        .priority-low { border-left-color: #4CAF50; background: linear-gradient(135deg, #E8F5E8 0%, #F1F8E9 100%); }
+        .priority-medium { border-left-color: #FF9800; background: linear-gradient(135deg, #FFF3E0 0%, #FFF8E1 100%); }
+        .priority-high { border-left-color: #F44336; background: linear-gradient(135deg, #FFEBEE 0%, #FCE4EC 100%); }
+        
+        /* Sort Button Active State */
+        .sort-active {
+            background: linear-gradient(135deg, #A94EBD 0%, #4B2E5E 100%);
+            color: white;
+        }
+        
+        /* Custom Scrollbar */
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        
+        /* Pulse Animation for Empty State */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .animate-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+    </style>
+</head>
+<body>
+    <!-- Firebase Configuration -->
+    <script>
+        const firebaseConfig = {
+  apiKey: "AIzaSyBi4feeVAPUJJXe9qUV7j-SutsGFRnZBjo",
+  authDomain: "lifeappcy.firebaseapp.com",
+  projectId: "lifeappcy",
+  storageBucket: "lifeappcy.firebasestorage.app",
+  messagingSenderId: "598700486958",
+  appId: "1:598700486958:web:307187bca0966041e84abf",
+  measurementId: "G-57C80GJLZD"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+    </script>
+
+    <!-- Header -->
+    <header class="glass mx-4 mt-4 rounded-2xl px-6 py-4 shadow-lg">
+        <div class="flex items-center justify-between max-w-7xl mx-auto">
+            <div class="flex items-center space-x-3">
+                <div class="-br from-[#A94EBD] to-[#4B2E5E] rounded-xl flex items-center justify-center">
+                    <img src="/imeges/Life Logo.png" alt="Life Logo" class="logo-image">
+                </div>
+                <div>
+                    <span class="font-bold text-[#4B2E5E] text-2xl">Life Reminders</span>
+                    <p class="text-xs text-[#4B2E5E] opacity-70">Never miss what matters most</p>
+                </div>
+            </div>
+            
+            <nav class="hidden md:flex space-x-6 text-xs text-[#7a5a5a] font-semibold tracking-wide">
+                <a class="hover:text-[#a87f7f] transition-colors" href="index.html">HOME</a>
+                <a class="hover:text-[#a87f7f] transition-colors" href="about.html">ABOUT</a>
+                <a class="hover:text-[#a87f7f] transition-colors active" href="features.html">FEATURES</a>
+                <a class="hover:text-[#a87f7f] transition-colors" href="#">HELP</a>
+                <a class="hover:text-[#a87f7f] transition-colors" href="#">REVIEWS</a>
+            </nav>
+            
+            <div class="flex items-center space-x-3" id="auth-buttons">
+                <a href="login.html" id="login-btn" class="text-sm font-semibold text-[#4B2E5E] hover:text-[#A94EBD] transition-colors">LOGIN</a>
+                <a href="register.html" id="signup-btn" class="bg-gradient-to-r from-[#A94EBD] to-[#4B2E5E] text-white text-sm font-semibold px-4 py-2 rounded-lg hover:shadow-lg transition-all">SIGN UP</a>
+            </div>
+            
+            <div class="hidden items-center space-x-3" id="user-profile">
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-user-circle text-[#4B2E5E] text-xl"></i>
+                    <span id="user-name" class="text-sm font-semibold text-[#4B2E5E]"></span>
+                </div>
+                <button id="logout-btn" class="bg-red-500 text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-red-600 transition-colors">LOGOUT</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Features Navigation -->
+    <section class="flex justify-between max-w-2xl mx-auto mt-6 bg-white rounded-xl px-8 py-4 shadow-sm">
+        <a href="features.html" class="feature-item text-center px-2">
+            <i class="fas fa-sticky-note text-2xl block mx-auto"></i>
+            <span class="text-xs font-semibold mt-1 block">Sticky Notes</span>
+        </a>
+        <a href="calendar.html" class="feature-item text-center px-2">
+            <i class="fas fa-calendar-alt text-2xl block mx-auto"></i>
+            <span class="text-xs font-semibold mt-1 block">Calendar</span>
+        </a>
+        <a href="reminders.html" class="feature-item active text-center px-2">
+            <i class="fas fa-bell text-2xl block mx-auto"></i>
+            <span class="text-xs font-semibold mt-1 block">Reminders</span>
+        </a>
+        <a href="Todo.html" class="feature-item text-center px-2">
+            <i class="fas fa-check-square text-2xl block mx-auto"></i>
+            <span class="text-xs font-semibold mt-1 block">To-Do</span>
+        </a>
+    </section>
+
+    <!-- Main Content -->
+    <main class="max-w-6xl mx-auto px-4 py-8">
+        <!-- Hero Section -->
+        <div class="text-center mb-12">
+            <div class="animate-float mb-6">
+                <div class="w-24 h-24 mx-auto bg-gradient-to-br from-[#A94EBD] to-[#4B2E5E] rounded-2xl shadow-2xl flex items-center justify-center">
+                    <i class="fas fa-bell text-white text-3xl"></i>
+                    
+                </div>
+            </div>
+            <h1 class="text-5xl font-bold text-[#4B2E5E] mb-4">Smart Reminders</h1>
+            <p class="text-[#4B2E5E] opacity-80 text-lg max-w-2xl mx-auto">
+                Set up intelligent reminders for important tasks and deadlines. Stay organized with priority levels, categories, and smart sorting.
+            </p>
+        </div>
+
+        <!-- Action Bar -->
+        <div class="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-6 mb-8">
+            <button id="add-reminder-btn" class="bg-gradient-to-r from-[#A94EBD] to-[#4B2E5E] text-white font-semibold px-8 py-4 rounded-xl hover:shadow-lg transition-all flex items-center space-x-3 text-lg">
+                <i class="fas fa-plus"></i>
+                <span>Add New Reminder</span>
+            </button>
+            
+            <div class="flex items-center space-x-3">
+                <span class="text-[#4B2E5E] font-semibold">Sort by time:</span>
+                <button id="sort-asc" class="glass px-4 py-2 rounded-lg text-[#4B2E5E] hover:bg-[#A94EBD] hover:text-white transition-all flex items-center space-x-2">
+                    <i class="fas fa-sort-amount-up"></i>
+                    <span>Ascending</span>
+                </button>
+                <button id="sort-desc" class="glass px-4 py-2 rounded-lg text-[#4B2E5E] hover:bg-[#A94EBD] hover:text-white transition-all flex items-center space-x-2">
+                    <i class="fas fa-sort-amount-down"></i>
+                    <span>Descending</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Categories Overview -->
+        <div class="glass rounded-2xl p-6 mb-8">
+            <h3 class="text-lg font-semibold text-[#4B2E5E] mb-6 flex items-center">
+                <i class="fas fa-layer-group mr-2"></i>
+                Your Reminder Categories
+            </h3>
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4" id="categories-grid">
+                <!-- Categories will be rendered here -->
+            </div>
+        </div>
+
+        <!-- Current Date Display -->
+        <div class="glass rounded-2xl p-6 mb-8">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-6">
+                    <div class="text-6xl font-bold text-[#4B2E5E]" id="current-day">24</div>
+                    <div class="text-[#4B2E5E]">
+                        <div class="text-2xl font-semibold" id="current-weekday">Wednesday</div>
+                        <div class="text-lg opacity-70" id="current-month-year">January 2025</div>
+                        <div class="text-sm opacity-60 mt-1" id="current-time"></div>
+                    </div>
+                </div>
+                <div class="flex space-x-3">
+                    <button id="prev-day" class="glass w-12 h-12 rounded-full flex items-center justify-center text-[#4B2E5E] hover:text-[#A94EBD] hover:bg-[#A94EBD] hover:text-white transition-all">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button id="today-btn" class="glass px-4 py-2 rounded-lg text-[#4B2E5E] hover:bg-[#A94EBD] hover:text-white transition-all font-semibold">
+                        Today
+                    </button>
+                    <button id="next-day" class="glass w-12 h-12 rounded-full flex items-center justify-center text-[#4B2E5E] hover:text-[#A94EBD] hover:bg-[#A94EBD] hover:text-white transition-all">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Weekly Date Selector -->
+        <div class="glass rounded-2xl p-4 mb-8">
+            <div class="flex justify-center space-x-2 overflow-x-auto scrollbar-hide" id="week-selector">
+                <!-- Week days will be generated here -->
+            </div>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="glass rounded-xl p-6 text-center">
+                <div class="text-3xl font-bold text-[#4B2E5E]" id="total-reminders">0</div>
+                <div class="text-sm text-[#4B2E5E] opacity-70">Total Reminders</div>
+            </div>
+            <div class="glass rounded-xl p-6 text-center">
+                <div class="text-3xl font-bold text-[#A94EBD]" id="today-reminders">0</div>
+                <div class="text-sm text-[#4B2E5E] opacity-70">Today's Reminders</div>
+            </div>
+            <div class="glass rounded-xl p-6 text-center">
+                <div class="text-3xl font-bold text-[#F44336]" id="high-priority">0</div>
+                <div class="text-sm text-[#4B2E5E] opacity-70">High Priority</div>
+            </div>
+        </div>
+
+        <!-- Reminders List -->
+        <div class="glass rounded-2xl p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold text-[#4B2E5E] flex items-center">
+                    <i class="fas fa-list-ul mr-3"></i>
+                    <span id="reminders-date-title">Today's Reminders</span>
+                </h2>
+                <div class="flex items-center space-x-2 text-sm text-[#4B2E5E] opacity-70">
+                    <i class="fas fa-clock"></i>
+                    <span>Time</span>
+                    <span class="mx-2">•</span>
+                    <i class="fas fa-tag"></i>
+                    <span>Priority</span>
+                    <span class="mx-2">•</span>
+                    <i class="fas fa-folder"></i>
+                    <span>Category</span>
+                </div>
+            </div>
+            
+            <div id="reminders-container" class="space-y-4">
+                <!-- Reminders will be displayed here -->
+            </div>
+
+            <!-- Empty State -->
+            <div id="reminders-empty-state" class="text-center py-16 hidden">
+                <div class="animate-pulse mb-6">
+                    <div class="w-32 h-32 mx-auto bg-gradient-to-br from-[#A94EBD] to-[#4B2E5E] rounded-2xl shadow-lg flex items-center justify-center">
+                        <i class="fas fa-bell text-4xl text-white"></i>
+                    </div>
+                </div>
+                <h3 class="text-2xl font-semibold text-[#4B2E5E] mb-3">No reminders yet</h3>
+                <p class="text-[#4B2E5E] opacity-70 mb-8 max-w-md mx-auto">
+                    Create your first reminder to stay organized and never miss important events!
+                </p>
+                <button onclick="openModal()" class="bg-gradient-to-r from-[#A94EBD] to-[#4B2E5E] text-white font-semibold px-6 py-3 rounded-xl hover:shadow-lg transition-all">
+                    <i class="fas fa-plus mr-2"></i>
+                    Create First Reminder
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Reminder Modal -->
+    <div id="reminder-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 modal opacity-0 invisible">
+        <div class="glass rounded-2xl p-8 w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-semibold text-[#4B2E5E]" id="modal-title">Add New Reminder</h3>
+                <button id="close-modal" class="text-[#4B2E5E] hover:text-[#A94EBD] text-2xl transition-colors">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <form id="reminder-form">
+                <input type="hidden" id="reminder-id">
+                
+                <!-- Title Field -->
+                <div class="mb-6">
+                    <label for="reminder-title" class="block text-sm font-semibold text-[#4B2E5E] mb-2">
+                        <i class="fas fa-heading mr-2"></i>Reminder Title
+                    </label>
+                    <input type="text" id="reminder-title" class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#A94EBD] focus:border-transparent transition-all" placeholder="Enter reminder title..." required>
+                </div>
+                
+                <!-- Description Field -->
+                <div class="mb-6">
+                    <label for="reminder-description" class="block text-sm font-semibold text-[#4B2E5E] mb-2">
+                        <i class="fas fa-align-left mr-2"></i>Description
+                    </label>
+                    <textarea id="reminder-description" rows="4" class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#A94EBD] focus:border-transparent font-handwriting transition-all" placeholder="Add details about your reminder..."></textarea>
+                </div>
+                
+                <!-- Date and Time Row -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div>
+                        <label for="reminder-date" class="block text-sm font-semibold text-[#4B2E5E] mb-2">
+                            <i class="fas fa-calendar mr-2"></i>Date
+                        </label>
+                        <input type="date" id="reminder-date" class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#A94EBD] focus:border-transparent transition-all" required>
+                    </div>
+                    <div>
+                        <label for="reminder-time" class="block text-sm font-semibold text-[#4B2E5E] mb-2">
+                            <i class="fas fa-clock mr-2"></i>Time
+                        </label>
+                        <input type="time" id="reminder-time" class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#A94EBD] focus:border-transparent transition-all">
+                    </div>
+                </div>
+                
+                <!-- Category and Priority Row -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div>
+                        <label for="reminder-category" class="block text-sm font-semibold text-[#4B2E5E] mb-2">
+                            <i class="fas fa-folder mr-2"></i>Category
+                        </label>
+                        <select id="reminder-category" class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#A94EBD] focus:border-transparent transition-all">
+                            <option value="Today">Today</option>
+                            <option value="Work">Work</option>
+                            <option value="Personal">Personal</option>
+                            <option value="Study">Study</option>
+                            <option value="Health">Health</option>
+                            <option value="Family">Family</option>
+                            <option value="Finance">Finance</option>
+                            <option value="Travel">Travel</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="reminder-priority" class="block text-sm font-semibold text-[#4B2E5E] mb-2">
+                            <i class="fas fa-exclamation-triangle mr-2"></i>Priority
+                        </label>
+                        <select id="reminder-priority" class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#A94EBD] focus:border-transparent transition-all">
+                            <option value="low">🟢 Low Priority</option>
+                            <option value="medium" selected>🟡 Medium Priority</option>
+                            <option value="high">🔴 High Priority</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="flex justify-end space-x-4">
+                    <button type="button" id="cancel-btn" class="px-6 py-3 text-sm font-semibold text-[#4B2E5E] hover:text-[#A94EBD] transition-colors">Cancel</button>
+                    <button type="button" id="delete-btn" class="px-6 py-3 bg-red-500 text-white text-sm font-semibold rounded-xl hover:bg-red-600 transition-all hidden">
+                        <i class="fas fa-trash mr-2"></i>Delete
+                    </button>
+                    <button type="submit" id="save-btn" class="px-8 py-3 bg-gradient-to-r from-[#A94EBD] to-[#4B2E5E] text-white text-sm font-semibold rounded-xl hover:shadow-lg transition-all">
+                        <i class="fas fa-save mr-2"></i>Save Reminder
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Loading Indicator -->
+    <div id="loading-indicator" class="fixed top-4 right-4 glass rounded-lg p-4 hidden z-50">
+        <div class="flex items-center space-x-3">
+            <div class="loading-spinner"></div>
+            <span class="text-sm text-[#4B2E5E] font-semibold">Loading...</span>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="fixed top-4 right-4 space-y-2 z-50">
+        <!-- Toast messages will appear here -->
+    </div>
+
+    <!-- Footer -->
+    <footer class="glass mt-16 py-8 px-6 mx-4 rounded-2xl">
+        <div class="max-w-6xl mx-auto">
+            <div class="flex flex-col md:flex-row md:justify-between md:items-start space-y-6 md:space-y-0">
+                <div class="flex items-center space-x-4">
+                    <div class=" from-[#A94EBD] to-[#4B2E5E] rounded-xl flex items-center justify-center">
+                        
+                        <img src="/imeges/Life Logo.png" alt="Life Logo" class="logo-image">
+                    </div>
+                    <div>
+                        <h2 class="text-[#4B2E5E] font-bold text-2xl">Life Reminders</h2>
+                        <p class="text-sm text-[#4B2E5E] opacity-70 max-w-[300px]">
+                            Smart reminder system to help you stay organized and never miss important events.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="flex flex-col md:flex-row md:space-x-12 text-sm text-[#4B2E5E] font-semibold">
+                    <div>
+                        <p class="mb-3 font-bold text-base">Quick Links</p>
+                        <ul class="space-y-2 opacity-70">
+                            <li><a class="hover:text-[#A94EBD] transition-colors" href="#">Home</a></li>
+                            <li><a class="hover:text-[#A94EBD] transition-colors" href="#">Features</a></li>
+                            <li><a class="hover:text-[#A94EBD] transition-colors" href="#">Help & Support</a></li>
+                            <li><a class="hover:text-[#A94EBD] transition-colors" href="#">Privacy Policy</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <p class="mb-3 font-bold text-base">Connect</p>
+                        <div class="flex space-x-4 text-xl">
+                            <a class="hover:text-[#A94EBD] transition-colors" href="#"><i class="fab fa-facebook-f"></i></a>
+                            <a class="hover:text-[#A94EBD] transition-colors" href="#"><i class="fab fa-twitter"></i></a>
+                            <a class="hover:text-[#A94EBD] transition-colors" href="#"><i class="fab fa-instagram"></i></a>
+                            <a class="hover:text-[#A94EBD] transition-colors" href="#"><i class="fab fa-linkedin"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-8 pt-6 border-t border-[#4B2E5E] border-opacity-20 text-center">
+                <p class="text-sm text-[#4B2E5E] opacity-70">© 2025 Life Reminders. All rights reserved. Website by Ravindu Perera Kumara</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Global variables
+            let currentUser = null;
+            let currentDate = new Date();
+            let reminders = [];
+            let sortOrder = 'asc';
+            let categories = ['Today', 'Work', 'Personal', 'Study', 'Health', 'Family', 'Finance', 'Travel'];
+            
+            // DOM elements
+            const authButtons = document.getElementById('auth-buttons');
+            const userProfile = document.getElementById('user-profile');
+            const userName = document.getElementById('user-name');
+            const logoutBtn = document.getElementById('logout-btn');
+            const reminderModal = document.getElementById('reminder-modal');
+            const modalTitle = document.getElementById('modal-title');
+            const reminderForm = document.getElementById('reminder-form');
+            const closeModal = document.getElementById('close-modal');
+            const cancelBtn = document.getElementById('cancel-btn');
+            const saveBtn = document.getElementById('save-btn');
+            const deleteBtn = document.getElementById('delete-btn');
+            const loadingIndicator = document.getElementById('loading-indicator');
+            const toastContainer = document.getElementById('toast-container');
+            
+            // Category colors
+            const categoryColors = {
+                Today: 'linear-gradient(135deg, #B06EBF 0%, #9A4EBD 100%)',
+                Work: 'linear-gradient(135deg, #FF9800 0%, #F57C00 100%)',
+                Personal: 'linear-gradient(135deg, #E91E63 0%, #C2185B 100%)',
+                Study: 'linear-gradient(135deg, #3F51B5 0%, #303F9F 100%)',
+                Health: 'linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%)',
+                Family: 'linear-gradient(135deg, #9C27B0 0%, #7B1FA2 100%)',
+                Finance: 'linear-gradient(135deg, #607D8B 0%, #455A64 100%)',
+                Travel: 'linear-gradient(135deg, #00BCD4 0%, #0097A7 100%)'
+            };
+            
+            // Initialize app
+            init();
+            
+            function init() {
+                setupEventListeners();
+                setupAuthStateListener();
+                updateDateDisplays();
+                updateCurrentTime();
+                renderCategories();
+                
+                // Update time every minute
+                setInterval(updateCurrentTime, 60000);
+            }
+            
+            function setupEventListeners() {
+                // Auth buttons - removed login and signup handlers since they now use links
+                logoutBtn.addEventListener('click', handleLogout);
+                
+                // Modal handlers
+                closeModal.addEventListener('click', closeReminderModal);
+                cancelBtn.addEventListener('click', closeReminderModal);
+                reminderModal.addEventListener('click', (e) => {
+                    if (e.target === reminderModal) closeReminderModal();
+                });
+                
+                // Form submission
+                reminderForm.addEventListener('submit', handleFormSubmit);
+                
+                // Add reminder button
+                document.getElementById('add-reminder-btn').addEventListener('click', () => openModal());
+                
+                // Sort buttons
+                document.getElementById('sort-asc').addEventListener('click', () => setSortOrder('asc'));
+                document.getElementById('sort-desc').addEventListener('click', () => setSortOrder('desc'));
+                
+                // Date navigation
+                document.getElementById('prev-day').addEventListener('click', () => {
+                    currentDate.setDate(currentDate.getDate() - 1);
+                    updateDateDisplays();
+                    loadReminders();
+                });
+                document.getElementById('next-day').addEventListener('click', () => {
+                    currentDate.setDate(currentDate.getDate() + 1);
+                    updateDateDisplays();
+                    loadReminders();
+                });
+                document.getElementById('today-btn').addEventListener('click', () => {
+                    currentDate = new Date();
+                    updateDateDisplays();
+                    loadReminders();
+                });
+                
+                // Keyboard shortcuts
+                document.addEventListener('keydown', (e) => {
+                    if ((e.ctrlKey || e.metaKey) && e.key === 'n' && !reminderModal.classList.contains('opacity-100')) {
+                        e.preventDefault();
+                        openModal();
+                    }
+                    
+                    if (e.key === 'Escape' && reminderModal.classList.contains('opacity-100')) {
+                        closeReminderModal();
+                    }
+                });
+            }
+            
+            function setupAuthStateListener() {
+                auth.onAuthStateChanged(user => {
+                    if (user) {
+                        currentUser = user;
+                        authButtons.classList.add('hidden');
+                        userProfile.classList.remove('hidden');
+                        userName.textContent = user.displayName || user.email.split('@')[0];
+                        loadReminders();
+                        updateStatistics();
+                    } else {
+                        currentUser = null;
+                        authButtons.classList.remove('hidden');
+                        userProfile.classList.add('hidden');
+                        reminders = [];
+                        renderReminders();
+                        updateStatistics();
+                    }
+                });
+            }
+            
+            function updateDateDisplays() {
+                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                
+                // Update current date components
+                document.getElementById('current-day').textContent = currentDate.getDate();
+                document.getElementById('current-weekday').textContent = currentDate.toLocaleDateString('en-US', { weekday: 'long' });
+                document.getElementById('current-month-year').textContent = currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+                
+                // Update reminders title
+                const isToday = currentDate.toDateString() === new Date().toDateString();
+                const isTomorrow = currentDate.toDateString() === new Date(Date.now() + 86400000).toDateString();
+                const isYesterday = currentDate.toDateString() === new Date(Date.now() - 86400000).toDateString();
+                
+                let dateTitle = 'Reminders';
+                if (isToday) dateTitle = "Today's Reminders";
+                else if (isTomorrow) dateTitle = "Tomorrow's Reminders";
+                else if (isYesterday) dateTitle = "Yesterday's Reminders";
+                else dateTitle = `Reminders for ${currentDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+                
+                document.getElementById('reminders-date-title').textContent = dateTitle;
+                
+                // Update week selector
+                updateWeekSelector();
+            }
+            
+            function updateCurrentTime() {
+                const now = new Date();
+                const timeString = now.toLocaleTimeString('en-US', { 
+                    hour: '2-digit', 
+                    minute: '2-digit',
+                    hour12: true 
+                });
+                document.getElementById('current-time').textContent = timeString;
+            }
+            
+            function updateWeekSelector() {
+                const weekSelector = document.getElementById('week-selector');
+                weekSelector.innerHTML = '';
+                
+                const startOfWeek = new Date(currentDate);
+                startOfWeek.setDate(currentDate.getDate() - currentDate.getDay());
+                
+                for (let i = 0; i < 7; i++) {
+                    const day = new Date(startOfWeek);
+                    day.setDate(startOfWeek.getDate() + i);
+                    
+                    const dayButton = document.createElement('button');
+                    dayButton.className = `flex-shrink-0 w-16 h-16 rounded-xl border-2 text-sm font-semibold transition-all ${
+                        day.toDateString() === currentDate.toDateString() 
+                            ? 'bg-[#4B2E5E] text-white border-[#4B2E5E] shadow-lg' 
+                            : 'border-[#4B2E5E] text-[#4B2E5E] hover:bg-[#A94EBD] hover:text-white hover:border-[#A94EBD]'
+                    }`;
+                    
+                    const dayName = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][i];
+                    const isToday = day.toDateString() === new Date().toDateString();
+                    
+                    dayButton.innerHTML = `
+                        <div class="text-xs ${isToday ? 'font-bold' : ''}">${dayName}</div>
+                        <div class="text-lg font-bold">${day.getDate()}</div>
+                    `;
+                    
+                    dayButton.addEventListener('click', () => {
+                        currentDate = new Date(day);
+                        updateDateDisplays();
+                        loadReminders();
+                    });
+                    
+                    weekSelector.appendChild(dayButton);
+                }
+            }
+            
+            function renderCategories() {
+                const categoriesGrid = document.getElementById('categories-grid');
+                categoriesGrid.innerHTML = '';
+                
+                categories.forEach(category => {
+                    const categoryCard = document.createElement('div');
+                    categoryCard.className = 'category-card flex-shrink-0 w-20 h-20 rounded-xl text-white text-center pt-4 text-xs font-semibold relative cursor-pointer transition-all shadow-lg';
+                    categoryCard.style.background = categoryColors[category] || 'linear-gradient(135deg, #9E9E9E 0%, #757575 100%)';
+                    
+                    const categoryReminders = reminders.filter(r => r.category === category);
+                    
+                    categoryCard.innerHTML = `
+                        <div>${category}</div>
+                        ${categoryReminders.length > 0 ? `
+                            <div class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold">
+                                ${categoryReminders.length}
+                            </div>
+                        ` : ''}
+                    `;
+                    
+                    categoryCard.addEventListener('click', () => {
+                        // Filter by category (future feature)
+                        showToast(`Showing ${category} reminders`, 'info');
+                    });
+                    
+                    categoriesGrid.appendChild(categoryCard);
+                });
+                
+                // Add new category button
+                const addCategoryCard = document.createElement('div');
+                addCategoryCard.className = 'category-card flex-shrink-0 w-20 h-20 rounded-xl bg-gradient-to-br from-gray-300 to-gray-400 text-white text-center pt-6 cursor-pointer hover:from-gray-400 hover:to-gray-500 transition-all shadow-lg';
+                addCategoryCard.innerHTML = '<i class="fas fa-plus text-xl"></i>';
+                addCategoryCard.addEventListener('click', () => {
+                    const newCategory = prompt('Enter new category name:');
+                    if (newCategory && !categories.includes(newCategory)) {
+                        categories.push(newCategory);
+                        renderCategories();
+                        showToast('Category added successfully!', 'success');
+                    }
+                });
+                
+                categoriesGrid.appendChild(addCategoryCard);
+            }
+            
+            function setSortOrder(order) {
+                sortOrder = order;
+                
+                // Update button states
+                document.getElementById('sort-asc').classList.toggle('sort-active', order === 'asc');
+                document.getElementById('sort-desc').classList.toggle('sort-active', order === 'desc');
+                
+                renderReminders();
+                showToast(`Sorted ${order === 'asc' ? 'ascending' : 'descending'}`, 'info');
+            }
+            
+            // Authentication functions
+            function handleLogout() {
+                showLoading();
+                auth.signOut()
+                    .then(() => {
+                        showToast('Logged out successfully!', 'success');
+                    })
+                    .catch(error => {
+                        showToast('Logout failed: ' + error.message, 'error');
+                    })
+                    .finally(() => {
+                        hideLoading();
+                    });
+            }
+            
+            // Modal functions
+            function openModal(reminder = null) {
+                if (!currentUser) {
+                    showToast('Please log in to create reminders', 'error');
+                    return;
+                }
+                
+                // Reset form
+                reminderForm.reset();
+                document.getElementById('reminder-id').value = reminder ? reminder.id : '';
+                
+                if (reminder) {
+                    modalTitle.textContent = 'Edit Reminder';
+                    document.getElementById('reminder-title').value = reminder.title || '';
+                    document.getElementById('reminder-description').value = reminder.description || '';
+                    document.getElementById('reminder-date').value = formatDateForInput(reminder.date) || '';
+                    document.getElementById('reminder-time').value = reminder.time || '';
+                    document.getElementById('reminder-category').value = reminder.category || 'Today';
+                    document.getElementById('reminder-priority').value = reminder.priority || 'medium';
+                    deleteBtn.classList.remove('hidden');
+                    deleteBtn.onclick = () => deleteReminder(reminder.id);
+                } else {
+                    modalTitle.textContent = 'Add New Reminder';
+                    document.getElementById('reminder-date').value = currentDate.toISOString().split('T')[0];
+                    document.getElementById('reminder-category').value = 'Today';
+                    document.getElementById('reminder-priority').value = 'medium';
+                    deleteBtn.classList.add('hidden');
+                }
+                
+                // Show modal
+                reminderModal.classList.remove('invisible', 'opacity-0');
+                reminderModal.classList.add('opacity-100');
+                
+                setTimeout(() => document.getElementById('reminder-title').focus(), 100);
+            }
+            
+            function closeReminderModal() {
+                reminderModal.classList.remove('opacity-100');
+                reminderModal.classList.add('opacity-0', 'invisible');
+                reminderForm.reset();
+            }
+            
+            // Form submission handler
+            async function handleFormSubmit(e) {
+                e.preventDefault();
+                
+                const id = document.getElementById('reminder-id').value;
+                const title = document.getElementById('reminder-title').value.trim();
+                const description = document.getElementById('reminder-description').value.trim();
+                const date = document.getElementById('reminder-date').value;
+                const time = document.getElementById('reminder-time').value;
+                const category = document.getElementById('reminder-category').value;
+                const priority = document.getElementById('reminder-priority').value;
+                
+                if (!title) {
+                    showToast('Title is required', 'error');
+                    return;
+                }
+                
+                if (!date) {
+                    showToast('Date is required', 'error');
+                    return;
+                }
+                
+                showLoading();
+                saveBtn.disabled = true;
+                saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Saving...';
+                
+                try {
+                    const reminderData = {
+                        title: title,
+                        description: description || '',
+                        date: formatDateForStorage(date),
+                        time: time || '',
+                        category: category,
+                        priority: priority,
+                        userId: currentUser.uid,
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    };
+                    
+                    if (!id) {
+                        reminderData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                    }
+                    
+                    console.log('Saving reminder data:', reminderData);
+                    
+                    if (id) {
+                        await db.collection('reminders').doc(id).update(reminderData);
+                        showToast('Reminder updated successfully!', 'success');
+                    } else {
+                        const docRef = await db.collection('reminders').add(reminderData);
+                        console.log('Document written with ID: ', docRef.id);
+                        showToast('Reminder created successfully!', 'success');
+                    }
+                    
+                    closeReminderModal();
+                    loadReminders();
+                    updateStatistics();
+                    
+                } catch (error) {
+                    console.error('Error saving reminder:', error);
+                    console.error('Error code:', error.code);
+                    console.error('Error message:', error.message);
+                    
+                    let errorMessage = 'Error saving reminder. Please try again.';
+                    if (error.code === 'permission-denied') {
+                        errorMessage = 'Permission denied. Please check your login status.';
+                    } else if (error.code === 'unavailable') {
+                        errorMessage = 'Service temporarily unavailable. Please try again later.';
+                    } else if (error.message) {
+                        errorMessage = `Error: ${error.message}`;
+                    }
+                    
+                    showToast(errorMessage, 'error');
+                } finally {
+                    hideLoading();
+                    saveBtn.disabled = false;
+                    saveBtn.innerHTML = '<i class="fas fa-save mr-2"></i>Save Reminder';
+                }
+            }
+            
+            // Delete reminder
+            async function deleteReminder(id) {
+                if (!confirm('Are you sure you want to delete this reminder?')) return;
+                
+                showLoading();
+                try {
+                    await db.collection('reminders').doc(id).delete();
+                    showToast('Reminder deleted successfully!', 'success');
+                    closeReminderModal();
+                    loadReminders();
+                    updateStatistics();
+                } catch (error) {
+                    console.error('Error deleting reminder:', error);
+                    showToast('Error deleting reminder. Please try again.', 'error');
+                } finally {
+                    hideLoading();
+                }
+            }
+            
+            // Data loading functions
+            async function loadReminders() {
+                if (!currentUser) {
+                    reminders = [];
+                    renderReminders();
+                    return;
+                }
+                
+                try {
+                    showLoading();
+                    const dateKey = formatDateForStorage(currentDate.toISOString().split('T')[0]);
+                    console.log('Loading reminders for date:', dateKey);
+                    
+                    const snapshot = await db.collection('reminders')
+                        .where('userId', '==', currentUser.uid)
+                        .where('date', '==', dateKey)
+                        .get();
+                    
+                    reminders = [];
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
+                        reminders.push({
+                            id: doc.id,
+                            title: data.title || '',
+                            description: data.description || '',
+                            date: data.date || '',
+                            time: data.time || '',
+                            category: data.category || 'Today',
+                            priority: data.priority || 'medium',
+                            createdAt: data.createdAt,
+                            updatedAt: data.updatedAt
+                        });
+                    });
+                    
+                    console.log('Loaded reminders:', reminders);
+                    renderReminders();
+                    renderCategories();
+                    
+                } catch (error) {
+                    console.error('Error loading reminders:', error);
+                    showToast('Error loading reminders', 'error');
+                } finally {
+                    hideLoading();
+                }
+            }
+            
+            async function updateStatistics() {
+                if (!currentUser) {
+                    document.getElementById('total-reminders').textContent = '0';
+                    document.getElementById('today-reminders').textContent = '0';
+                    document.getElementById('high-priority').textContent = '0';
+                    return;
+                }
+                
+                try {
+                    // Get total reminders
+                    const totalSnapshot = await db.collection('reminders')
+                        .where('userId', '==', currentUser.uid)
+                        .get();
+                    
+                    // Get today's reminders
+                    const todayKey = formatDateForStorage(new Date().toISOString().split('T')[0]);
+                    const todaySnapshot = await db.collection('reminders')
+                        .where('userId', '==', currentUser.uid)
+                        .where('date', '==', todayKey)
+                        .get();
+                    
+                    // Get high priority reminders
+                    const highPrioritySnapshot = await db.collection('reminders')
+                        .where('userId', '==', currentUser.uid)
+                        .where('priority', '==', 'high')
+                        .get();
+                    
+                    document.getElementById('total-reminders').textContent = totalSnapshot.size;
+                    document.getElementById('today-reminders').textContent = todaySnapshot.size;
+                    document.getElementById('high-priority').textContent = highPrioritySnapshot.size;
+                    
+                } catch (error) {
+                    console.error('Error updating statistics:', error);
+                }
+            }
+            
+            // Rendering functions
+            function renderReminders() {
+                const container = document.getElementById('reminders-container');
+                const emptyState = document.getElementById('reminders-empty-state');
+                
+                container.innerHTML = '';
+                
+                if (reminders.length === 0) {
+                    container.classList.add('hidden');
+                    emptyState.classList.remove('hidden');
+                    return;
+                }
+                
+                container.classList.remove('hidden');
+                emptyState.classList.add('hidden');
+                
+                // Sort reminders
+                const sortedReminders = [...reminders].sort((a, b) => {
+                    if (sortOrder === 'asc') {
+                        return (a.time || '').localeCompare(b.time || '');
+                    } else {
+                        return (b.time || '').localeCompare(a.time || '');
+                    }
+                });
+                
+                sortedReminders.forEach(reminder => {
+                    const reminderElement = createReminderElement(reminder);
+                    container.appendChild(reminderElement);
+                });
+            }
+            
+            function createReminderElement(reminder) {
+                const reminderDiv = document.createElement('div');
+                reminderDiv.className = `reminder-card rounded-xl p-6 cursor-pointer border-l-4 priority-${reminder.priority}`;
+                
+                const priorityIcons = {
+                    low: '🟢',
+                    medium: '🟡',
+                    high: '🔴'
+                };
+                
+                const priorityColors = {
+                    low: '#4CAF50',
+                    medium: '#FF9800',
+                    high: '#F44336'
+                };
+                
+                reminderDiv.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <div class="flex-1">
+                            <div class="flex items-center space-x-3 mb-3">
+                                ${reminder.time ? `<span class="text-sm font-bold text-[#4B2E5E] bg-white px-3 py-1 rounded-full">${formatTimeForDisplay(reminder.time)}</span>` : ''}
+                                <span class="px-3 py-1 rounded-full text-xs font-bold text-white" style="background: ${categoryColors[reminder.category] || '#9E9E9E'}">${reminder.category}</span>
+                                <span class="px-3 py-1 rounded-full text-xs font-bold text-white" style="background-color: ${priorityColors[reminder.priority]}">
+                                    ${priorityIcons[reminder.priority]} ${reminder.priority.toUpperCase()}
+                                </span>
+                            </div>
+                            <h4 class="text-lg font-bold text-[#4B2E5E] mb-2">${escapeHtml(reminder.title)}</h4>
+                            ${reminder.description ? `<p class="text-sm text-[#4B2E5E] opacity-80 leading-relaxed">${escapeHtml(reminder.description).replace(/\n/g, '<br>')}</p>` : ''}
+                        </div>
+                        <div class="flex items-center space-x-2 ml-4">
+                            <button class="text-[#4B2E5E] hover:text-[#A94EBD] text-lg transition-colors p-2 rounded-lg hover:bg-white" title="Edit reminder">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="text-red-500 hover:text-red-600 text-lg transition-colors p-2 rounded-lg hover:bg-white" title="Delete reminder">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                // Add event listeners
+                const editBtn = reminderDiv.querySelector('.fa-edit').parentElement;
+                const deleteBtn = reminderDiv.querySelector('.fa-trash').parentElement;
+                
+                editBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    openModal(reminder);
+                });
+                
+                deleteBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    deleteReminder(reminder.id);
+                });
+                
+                reminderDiv.addEventListener('click', () => {
+                    openModal(reminder);
+                });
+                
+                return reminderDiv;
+            }
+            
+            // Utility functions - FIXED DATE FORMATTING
+            function formatDateForStorage(dateString) {
+                const date = new Date(dateString);
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            }
+            
+            function formatDateForInput(dateString) {
+                // dateString is already in YYYY-MM-DD format from storage
+                return dateString;
+            }
+            
+            function formatTimeForDisplay(timeString) {
+                if (!timeString) return '';
+                const [hours, minutes] = timeString.split(':');
+                const hour = parseInt(hours);
+                const ampm = hour >= 12 ? 'PM' : 'AM';
+                const hour12 = hour % 12 || 12;
+                return `${hour12}:${minutes} ${ampm}`;
+            }
+            
+            function escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+            
+            function showLoading() {
+                loadingIndicator.classList.remove('hidden');
+            }
+            
+            function hideLoading() {
+                loadingIndicator.classList.add('hidden');
+            }
+            
+            function showToast(message, type = 'info') {
+                const toast = document.createElement('div');
+                toast.className = `glass rounded-xl p-4 mb-2 text-sm font-semibold transition-all transform translate-x-full opacity-0 shadow-lg ${
+                    type === 'success' ? 'text-green-600 border-l-4 border-green-500' : 
+                    type === 'error' ? 'text-red-600 border-l-4 border-red-500' : 
+                    'text-[#4B2E5E] border-l-4 border-[#A94EBD]'
+                }`;
+                
+                const icons = {
+                    success: 'fas fa-check-circle',
+                    error: 'fas fa-exclamation-circle',
+                    info: 'fas fa-info-circle'
+                };
+                
+                toast.innerHTML = `
+                    <div class="flex items-center space-x-2">
+                        <i class="${icons[type] || icons.info}"></i>
+                        <span>${message}</span>
+                    </div>
+                `;
+                
+                toastContainer.appendChild(toast);
+                
+                // Animate in
+                setTimeout(() => {
+                    toast.classList.remove('translate-x-full', 'opacity-0');
+                }, 100);
+                
+                // Auto remove
+                setTimeout(() => {
+                    toast.classList.add('translate-x-full', 'opacity-0');
+                    setTimeout(() => {
+                        if (toast.parentNode) {
+                            toast.parentNode.removeChild(toast);
+                        }
+                    }, 300);
+                }, 4000);
+            }
+            
+            // Make openModal globally accessible
+            window.openModal = openModal;
+        });
+    </script>
+</body>
+</html>

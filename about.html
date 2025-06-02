@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Life - About Us</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #F3E9E9 0%, #E8D5E8 100%);
+            min-height: 100vh;
+        }
+        
+        .font-handwriting {
+            font-family: 'Kalam', cursive;
+        }
+        
+        .glass {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+        
+        .logo-image {
+            width: 110px;
+            height: 100px;
+            object-fit: contain;
+        }
+        
+    
+        .header-nav a {
+            transition: all 0.3s ease;
+            color: #7a5a5a;
+            padding: 12px;
+            border-radius: 8px;
+        }
+        
+        .header-nav a:hover {
+            color: #a87f7f;
+            background-color: rgba(168, 127, 127, 0.1);
+        }
+        
+        .header-nav a.active {
+            color: #a87f7f;
+            background-color: rgba(168, 127, 127, 0.15);
+            font-weight: 600;
+        }
+        
+
+        .section-card {
+            background: linear-gradient(135deg, #F3E9E9 0%, #E8D5E8 100%);
+            border: 1px solid rgba(75, 46, 94, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .section-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(75, 46, 94, 0.15);
+        }
+        
+
+        @media (max-width: 768px) {
+            .mobile-flex-col {
+                flex-direction: column;
+            }
+            
+            .mobile-text-center {
+                text-align: center;
+            }
+            
+            .mobile-w-full {
+                width: 100%;
+            }
+            
+            .mobile-mt-4 {
+                margin-top: 1rem;
+            }
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(1deg); }
+            50% { transform: translateY(-5px) rotate(-1deg); }
+        }
+        
+        .animate-float {
+            animation: float 4s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="glass mx-4 mt-4 rounded-2xl px-6 py-4 shadow-lg">
+        <div class="flex items-center justify-between max-w-7xl mx-auto">
+            <div class="flex items-center space-x-3">
+                <div class="rounded-xl flex items-center justify-center">
+                    <img src="imeges/Life Logo.png" alt="Life Logo" class="logo-image">
+                </div>
+                <div>
+                    <span class="font-bold text-[#4B2E5E] text-2xl">Life Reminders</span>
+                    <p class="text-xs text-[#4B2E5E] opacity-70">Never miss what matters most</p>
+                </div>
+            </div>
+            
+            <nav class="hidden md:flex space-x-2 text-xs text-[#7a5a5a] font-semibold tracking-wide header-nav">
+                <a href="index.html" class="px-3 py-2">HOME</a>
+                <a href="about.html" class="px-3 py-2 active">ABOUT</a>
+                <a href="features.html" class="px-3 py-2">FEATURES</a>
+                <a href="#" class="px-3 py-2">HELP</a>
+                <a href="#" class="px-3 py-2">REVIEWS</a>
+            </nav>
+            
+            <div class="flex items-center space-x-3">
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" class="text-[#4B2E5E] hover:text-[#A94EBD] transition-colors">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+                <div class="hidden md:flex items-center space-x-2">
+                    <i class="fas fa-user-circle text-[#4B2E5E] text-xl"></i>
+                </div>
+            </div>
+        </div>
+        
+
+        <div id="mobile-menu" class="hidden md:hidden mt-4 glass rounded-xl p-4">
+            <div class="flex flex-col space-y-2 text-sm font-semibold header-nav">
+                <a href="index.html" class="px-3 py-2">HOME</a>
+                <a href="about.html" class="px-3 py-2 active">ABOUT</a>
+                <a href="features.html" class="px-3 py-2">FEATURES</a>
+                <a href="#" class="px-3 py-2">HELP</a>
+                <a href="#" class="px-3 py-2">REVIEWS</a>
+            </div>
+        </div>
+    </header>
+
+
+    <main class="max-w-6xl mx-auto px-4 py-8">
+
+        <div class="text-center mb-12">
+            <div class="animate-float mb-6">
+                <div class="w-24 h-24 mx-auto bg-gradient-to-br from-[#A94EBD] to-[#4B2E5E] rounded-2xl shadow-2xl flex items-center justify-center">
+                    <i class="fas fa-info-circle text-white text-3xl"></i>
+                </div>
+            </div>
+            <h1 class="text-5xl font-bold text-[#4B2E5E] mb-4">About Life Reminders</h1>
+            <p class="text-[#4B2E5E] opacity-80 text-lg max-w-2xl mx-auto">
+                Discover the story behind our mission to help you stay organized and never miss what matters most.
+            </p>
+        </div>
+
+
+        <section class="glass rounded-2xl p-8 mb-8 section-card">
+            <div class="flex flex-wrap items-center justify-between mobile-flex-col">
+                <div class="w-full md:w-1/2 mb-6 md:mb-0 mobile-w-full">
+                    <img src="imeges/About Us/About Us Image.png" alt="About Us" class="w-full h-auto rounded-xl shadow-lg">
+                </div>
+                <div class="w-full md:w-1/2 md:pl-8 mobile-w-full mobile-text-center mobile-mt-4">
+                    <h2 class="text-3xl font-bold text-[#4B2E5E] mb-4">Our Story</h2>
+                    <p class="text-[#4B2E5E] opacity-80 mb-4">
+                        Life Reminders was born out of a simple need - to create a tool that helps people manage their busy lives without the overwhelm. 
+                        Our team of productivity enthusiasts came together in 2023 to build a solution that combines simplicity with powerful features.
+                    </p>
+                    <p class="text-[#4B2E5E] opacity-80">
+                        We believe technology should make life easier, not more complicated. That's why we've designed Life Reminders to be intuitive yet 
+                        powerful, helping you stay on top of your schedule while reducing stress and anxiety about forgetting important things.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+
+        <section class="glass rounded-2xl p-8 mb-8 section-card">
+            <div class="flex flex-wrap items-center justify-between mobile-flex-col">
+                <div class="w-full md:w-1/2 md:pr-8 mobile-w-full mobile-text-center mobile-mt-4 md:order-2">
+                    <h2 class="text-3xl font-bold text-[#4B2E5E] mb-4">Our Vision</h2>
+                    <p class="text-[#4B2E5E] opacity-80 mb-4">
+                        We envision a world where no one misses important moments because they forgot. Where people can focus on being present 
+                        rather than worrying about remembering everything.
+                    </p>
+                    <p class="text-[#4B2E5E] opacity-80">
+                        Our goal is to become the most trusted and loved reminder app by creating delightful experiences that genuinely improve 
+                        people's daily lives.
+                    </p>
+                </div>
+                <div class="w-full md:w-1/2 mb-6 md:mb-0 mobile-w-full md:order-1">
+                    <img src="imeges/About Us/Vision Image.png" alt="Our Vision" class="w-full h-auto rounded-xl shadow-lg">
+                </div>
+            </div>
+        </section>
+
+
+        <section class="glass rounded-2xl p-8 mb-8 section-card">
+            <div class="flex flex-wrap items-center justify-between mobile-flex-col">
+                <div class="w-full md:w-1/2 mb-6 md:mb-0 mobile-w-full">
+                    <img src="imeges/About Us/Mission Image~1.png" alt="Our Mission" class="w-full h-auto rounded-xl shadow-lg">
+                </div>
+                <div class="w-full md:w-1/2 md:pl-8 mobile-w-full mobile-text-center mobile-mt-4">
+                    <h2 class="text-3xl font-bold text-[#4B2E5E] mb-4">Our Mission</h2>
+                    <p class="text-[#4B2E5E] opacity-80 mb-4">
+                        To empower individuals to live more organized, productive, and stress-free lives by providing intuitive tools that help 
+                        them remember what matters most.
+                    </p>
+                    <p class="text-[#4B2E5E] opacity-80">
+                        We're committed to continuous improvement, listening to our users, and innovating to create the best possible experience 
+                        for managing your daily tasks and reminders.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+
+        <section class="glass rounded-2xl p-8 mb-8 section-card">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-[#4B2E5E] mb-4">Meet The Team</h2>
+                <p class="text-[#4B2E5E] opacity-80 max-w-2xl mx-auto">
+                    Our diverse team of designers, developers, and product experts are passionate about creating tools that make life easier.
+                </p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white bg-opacity-50 rounded-xl p-6 text-center">
+                    <div class="w-24 h-24 mx-auto mb-4 bg-gradient-to-br from-[#A94EBD] to-[#4B2E5E] rounded-full flex items-center justify-center text-white text-3xl font-bold">
+                        JD
+                    </div>
+                    <h3 class="text-xl font-bold text-[#4B2E5E] mb-1">John Doe</h3>
+                    <p class="text-[#4B2E5E] opacity-70 text-sm mb-2">Founder & CEO</p>
+                    <p class="text-[#4B2E5E] opacity-80 text-sm">
+                        Passionate about productivity and creating tools that help people focus on what matters.
+                    </p>
+                </div>
+                <div class="bg-white bg-opacity-50 rounded-xl p-6 text-center">
+                    <div class="w-24 h-24 mx-auto mb-4 bg-gradient-to-br from-[#A94EBD] to-[#4B2E5E] rounded-full flex items-center justify-center text-white text-3xl font-bold">
+                        AS
+                    </div>
+                    <h3 class="text-xl font-bold text-[#4B2E5E] mb-1">Alice Smith</h3>
+                    <p class="text-[#4B2E5E] opacity-70 text-sm mb-2">Lead Designer</p>
+                    <p class="text-[#4B2E5E] opacity-80 text-sm">
+                        Believes good design should be invisible and make complex things simple.
+                    </p>
+                </div>
+                <div class="bg-white bg-opacity-50 rounded-xl p-6 text-center">
+                    <div class="w-24 h-24 mx-auto mb-4 bg-gradient-to-br from-[#A94EBD] to-[#4B2E5E] rounded-full flex items-center justify-center text-white text-3xl font-bold">
+                        RJ
+                    </div>
+                    <h3 class="text-xl font-bold text-[#4B2E5E] mb-1">Robert Johnson</h3>
+                    <p class="text-[#4B2E5E] opacity-70 text-sm mb-2">Lead Developer</p>
+                    <p class="text-[#4B2E5E] opacity-80 text-sm">
+                        Loves building robust systems that work seamlessly behind the scenes.
+                    </p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+
+    <footer class="glass mt-16 py-8 px-6 mx-4 rounded-2xl">
+        <div class="max-w-6xl mx-auto">
+            <div class="flex flex-col md:flex-row md:justify-between md:items-start space-y-6 md:space-y-0">
+                <div class="flex items-center space-x-4">
+                    <div class="rounded-xl flex items-center justify-center">
+                        <img src="imeges/Life Logo.png" alt="Life Logo" class="logo-image">
+                    </div>
+                    <div>
+                        <h2 class="text-[#4B2E5E] font-bold text-2xl">Life Reminders</h2>
+                        <p class="text-sm text-[#4B2E5E] opacity-70 max-w-[300px]">
+                            Smart reminder system to help you stay organized and never miss important events.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="flex flex-col md:flex-row md:space-x-12 text-sm text-[#4B2E5E] font-semibold">
+                    <div>
+                        <p class="mb-3 font-bold text-base">Quick Links</p>
+                        <ul class="space-y-2 opacity-70">
+                            <li><a class="hover:text-[#A94EBD] transition-colors" href="index.html">Home</a></li>
+                            <li><a class="hover:text-[#A94EBD] transition-colors" href="about.html">About</a></li>
+                            <li><a class="hover:text-[#A94EBD] transition-colors" href="features.html">Features</a></li>
+                            <li><a class="hover:text-[#A94EBD] transition-colors" href="#">Privacy Policy</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <p class="mb-3 font-bold text-base">Connect</p>
+                        <div class="flex space-x-4 text-xl">
+                            <a class="hover:text-[#A94EBD] transition-colors" href="#"><i class="fab fa-facebook-f"></i></a>
+                            <a class="hover:text-[#A94EBD] transition-colors" href="#"><i class="fab fa-twitter"></i></a>
+                            <a class="hover:text-[#A94EBD] transition-colors" href="#"><i class="fab fa-instagram"></i></a>
+                            <a class="hover:text-[#A94EBD] transition-colors" href="#"><i class="fab fa-linkedin"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-8 pt-6 border-t border-[#4B2E5E] border-opacity-20 text-center">
+                <p class="text-sm text-[#4B2E5E] opacity-70">© 2025 Life Reminders. All rights reserved. Website by Ravindu Perera Kumara</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            if (mobileMenuButton && mobileMenu) {
+                mobileMenuButton.addEventListener('click', function() {
+                    mobileMenu.classList.toggle('hidden');
+                    const icon = mobileMenuButton.querySelector('i');
+                    if (mobileMenu.classList.contains('hidden')) {
+                        icon.classList.remove('fa-times');
+                        icon.classList.add('fa-bars');
+                    } else {
+                        icon.classList.remove('fa-bars');
+                        icon.classList.add('fa-times');
+                    }
+                });
+            }
+            
+
+            const mobileMenuLinks = document.querySelectorAll('#mobile-menu a');
+            mobileMenuLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    mobileMenu.classList.add('hidden');
+                    const icon = mobileMenuButton.querySelector('i');
+                    icon.classList.remove('fa-times');
+                    icon.classList.add('fa-bars');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

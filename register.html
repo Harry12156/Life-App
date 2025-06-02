@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Life - Register</title>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #F3E9E9 0%, #E8D5E8 100%);
+            min-height: 100vh;
+        }
+        
+        .font-handwriting {
+            font-family: 'Kalam', cursive;
+        }
+        
+        /* Glassmorphism Effect */
+        .glass {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+        
+        /* Loading Animation */
+        .loading-spinner {
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #A94EBD;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Floating Animation */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(1deg); }
+            50% { transform: translateY(-5px) rotate(-1deg); }
+        }
+        
+        .animate-float {
+            animation: float 4s ease-in-out infinite;
+        }
+        
+        /* Custom Input Styles */
+        .custom-input {
+            border: 1px solid rgba(75, 46, 94, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .custom-input:focus {
+            border-color: #A94EBD;
+            box-shadow: 0 0 0 2px rgba(169, 78, 189, 0.2);
+        }
+        
+        /* Button Styles */
+        .btn-primary {
+            background: linear-gradient(135deg, #A94EBD 0%, #4B2E5E 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(75, 46, 94, 0.15);
+        }
+    </style>
+</head>
+<body>
+    <!-- Firebase Configuration -->
+    <script>
+        const firebaseConfig = {
+  apiKey: "AIzaSyBi4feeVAPUJJXe9qUV7j-SutsGFRnZBjo",
+  authDomain: "lifeappcy.firebaseapp.com",
+  projectId: "lifeappcy",
+  storageBucket: "lifeappcy.firebasestorage.app",
+  messagingSenderId: "598700486958",
+  appId: "1:598700486958:web:307187bca0966041e84abf",
+  measurementId: "G-57C80GJLZD"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+    </script>
+
+    <!-- Header -->
+    <header class="glass mx-4 mt-4 rounded-2xl px-6 py-4 shadow-lg">
+        <div class="flex items-center justify-between max-w-7xl mx-auto">
+            <div class="flex items-center space-x-3">
+                <div class="-[#A94EBD] to-[#4B2E5E] rounded-xl flex items-center justify-center">
+                    <img src="/imeges/Life Logo.png" alt="Life Logo" class="w-20 h-20 object-contain">
+                </div>
+                <div>
+                    <span class="font-bold text-[#4B2E5E] text-2xl">Life</span>
+                    <p class="text-xs text-[#4B2E5E] opacity-70">Organize your life beautifully</p>
+                </div>
+            </div>
+            
+            <nav class="hidden md:flex space-x-6 text-xs text-[#7a5a5a] font-semibold tracking-wide">
+                <a class="hover:text-[#a87f7f] transition-colors" href="index.html">HOME</a>
+                <a class="hover:text-[#a87f7f] transition-colors" href="about.html">ABOUT</a>
+                <a class="hover:text-[#a87f7f] transition-colors" href="features.html">FEATURES</a>
+                <a class="hover:text-[#a87f7f] transition-colors" href="#">HELP</a>
+                <a class="hover:text-[#a87f7f] transition-colors" href="#">REVIEWS</a>
+            </nav>
+            
+            <div class="flex items-center space-x-3">
+                <a href="login.html" class="text-sm font-semibold text-[#4B2E5E] hover:text-[#A94EBD] transition-colors">LOGIN</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-6xl mx-auto px-4 py-8 flex flex-col md:flex-row items-center justify-between">
+        <!-- Registration Form Section -->
+        <div class="glass rounded-2xl p-8 w-full max-w-lg mb-10 md:mb-0">
+            <div class="text-center mb-8">
+                <div class="animate-float mb-6">
+                    <div class="w-24 h-24 mx-auto bg-gradient-to-br from-[#A94EBD] to-[#4B2E5E] rounded-2xl shadow-2xl flex items-center justify-center">
+                        <i class="fas fa-user-plus text-white text-3xl"></i>
+                    </div>
+                </div>
+                <h1 class="text-3xl font-bold text-[#4B2E5E] mb-2">Create Your Account</h1>
+                <p class="text-[#4B2E5E] opacity-80">
+                    Join Life to organize your reminders, tasks and notes in one beautiful place
+                </p>
+            </div>
+            
+            <form id="registrationForm" class="space-y-4">
+                <div>
+                    <label for="name" class="block text-sm font-semibold text-[#4B2E5E] mb-2">
+                        <i class="fas fa-user mr-2"></i>Full Name
+                    </label>
+                    <input type="text" id="name" name="name" placeholder="Enter your full name" 
+                           class="w-full custom-input rounded-xl px-4 py-3 text-sm focus:outline-none transition-all" required>
+                </div>
+                
+                <div>
+                    <label for="email" class="block text-sm font-semibold text-[#4B2E5E] mb-2">
+                        <i class="fas fa-envelope mr-2"></i>Email Address
+                    </label>
+                    <input type="email" id="email" name="email" placeholder="Enter your email" 
+                           class="w-full custom-input rounded-xl px-4 py-3 text-sm focus:outline-none transition-all" required>
+                </div>
+                
+                <div>
+                    <label for="password" class="block text-sm font-semibold text-[#4B2E5E] mb-2">
+                        <i class="fas fa-lock mr-2"></i>Password
+                    </label>
+                    <input type="password" id="password" name="password" placeholder="Create a password" 
+                           class="w-full custom-input rounded-xl px-4 py-3 text-sm focus:outline-none transition-all" required>
+                </div>
+                
+                <div>
+                    <label for="confirm-password" class="block text-sm font-semibold text-[#4B2E5E] mb-2">
+                        <i class="fas fa-lock mr-2"></i>Confirm Password
+                    </label>
+                    <input type="password" id="confirm-password" name="confirm_password" placeholder="Confirm your password" 
+                           class="w-full custom-input rounded-xl px-4 py-3 text-sm focus:outline-none transition-all" required>
+                </div>
+                
+                <div class="flex items-center space-x-2 mt-3">
+                    <input class="w-4 h-4 border border-[#4B2E5E] rounded-sm" id="remember" type="checkbox"/>
+                    <label class="text-xs text-[#4B2E5E] select-none" for="remember">Remember me for 31 days</label>
+                </div>
+                
+                <button type="submit" class="w-full btn-primary text-white font-semibold px-6 py-3 rounded-xl mt-6">
+                    <i class="fas fa-user-plus mr-2"></i>Create Account
+                </button>
+                
+                <p class="text-xs text-[#4B2E5E] text-center mt-4">
+                    Already have an account? <a href="login.html" class="font-semibold text-[#A94EBD] hover:underline">Log in</a>
+                </p>
+                
+                <div id="errorMessage" class="mt-4 text-red-600 text-sm hidden"></div>
+                <div id="successMessage" class="mt-4 text-green-600 text-sm hidden"></div>
+                
+                <div id="loadingIndicator" class="mt-4 hidden">
+                    <div class="flex items-center justify-center space-x-2">
+                        <div class="loading-spinner"></div>
+                        <span class="text-sm text-[#4B2E5E]">Creating your account...</span>
+                    </div>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Illustration Section -->
+        <div class="w-full max-w-md animate-float">
+            <img src="/imeges/Registert/Register Image.png" alt="Registration Illustration" class="w-full h-auto">
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="glass mt-16 py-8 px-6 mx-4 rounded-2xl">
+        <div class="max-w-6xl mx-auto">
+            <div class="flex flex-col md:flex-row md:justify-between md:items-start space-y-6 md:space-y-0">
+                <div class="flex items-center space-x-4">
+                    <div class="-[#A94EBD] to-[#4B2E5E] rounded-xl flex items-center justify-center">
+                        <img src="/imeges/Life Logo.png" alt="Life Logo" class="w-17 h-16 object-contain">
+                    </div>
+                    <div>
+                        <h2 class="text-[#4B2E5E] font-bold text-xl">Life</h2>
+                        <p class="text-xs text-[#4B2E5E] opacity-70 max-w-[300px]">
+                            Beautiful organization for your daily life.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="flex flex-col md:flex-row md:space-x-12 text-sm text-[#4B2E5E] font-semibold">
+                    <div>
+                        <p class="mb-3 font-bold text-base">Quick Links</p>
+                        <ul class="space-y-2 opacity-70 text-xs">
+                            <li><a class="hover:text-[#A94EBD] transition-colors" href="index.html">Home</a></li>
+                            <li><a class="hover:text-[#A94EBD] transition-colors" href="features.html">Features</a></li>
+                            <li><a class="hover:text-[#A94EBD] transition-colors" href="#">Help & Support</a></li>
+                            <li><a class="hover:text-[#A94EBD] transition-colors" href="#">Privacy Policy</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <p class="mb-3 font-bold text-base">Connect</p>
+                        <div class="flex space-x-4 text-lg">
+                            <a class="hover:text-[#A94EBD] transition-colors" href="#"><i class="fab fa-facebook-f"></i></a>
+                            <a class="hover:text-[#A94EBD] transition-colors" href="#"><i class="fab fa-twitter"></i></a>
+                            <a class="hover:text-[#A94EBD] transition-colors" href="#"><i class="fab fa-instagram"></i></a>
+                            <a class="hover:text-[#A94EBD] transition-colors" href="#"><i class="fab fa-linkedin"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-8 pt-6 border-t border-[#4B2E5E] border-opacity-20 text-center">
+                <p class="text-xs text-[#4B2E5E] opacity-70">© 2025 Life. All rights reserved. Website by Ravindu Perera Kumara</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Form validation and Firebase registration with Firestore
+        document.getElementById('registrationForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            
+            const errorMessage = document.getElementById('errorMessage');
+            const successMessage = document.getElementById('successMessage');
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            
+            // Reset messages
+            errorMessage.classList.add('hidden');
+            successMessage.classList.add('hidden');
+            loadingIndicator.classList.remove('hidden');
+            
+            // Validate password match
+            if (password !== confirmPassword) {
+                errorMessage.textContent = 'Passwords do not match!';
+                errorMessage.classList.remove('hidden');
+                loadingIndicator.classList.add('hidden');
+                return;
+            }
+            
+            // Validate password length
+            if (password.length < 6) {
+                errorMessage.textContent = 'Password should be at least 6 characters!';
+                errorMessage.classList.remove('hidden');
+                loadingIndicator.classList.add('hidden');
+                return;
+            }
+            
+            try {
+                // Create user with Firebase Authentication
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                const user = userCredential.user;
+                
+                // Update user profile with display name
+                await user.updateProfile({
+                    displayName: name
+                });
+                
+                // Create user document in Firestore
+                await db.collection('users').doc(user.uid).set({
+                    uid: user.uid,
+                    name: name,
+                    email: email,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
+                    profileComplete: false,
+                });
+                
+                // Registration successful
+                successMessage.textContent = 'Registration successful! Redirecting to login page...';
+                successMessage.classList.remove('hidden');
+                loadingIndicator.classList.add('hidden');
+                
+                // Redirect to login page after 2 seconds
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 2000);
+                
+            } catch (error) {
+                loadingIndicator.classList.add('hidden');
+                const errorCode = error.code;
+                let errorText = '';
+                
+                switch(errorCode) {
+                    case 'auth/email-already-in-use':
+                        errorText = 'Email already in use.';
+                        break;
+                    case 'auth/invalid-email':
+                        errorText = 'Invalid email address.';
+                        break;
+                    case 'auth/weak-password':
+                        errorText = 'Password is too weak.';
+                        break;
+                    default:
+                        errorText = error.message;
+                }
+                
+                errorMessage.textContent = errorText;
+                errorMessage.classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+</html>
