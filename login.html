@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,25 +10,35 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="./imeges/Life Logo.png">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#A94EBD">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Life">
+    <link rel="apple-touch-icon" href="/imeges/Life Logo.png">
+    <meta name="description" content="Learn about Life - Your beautiful reminder and task management app">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Kalam:wght@400;700&display=swap"
+        rel="stylesheet">
     <style>
         body {
             font-family: 'Montserrat', sans-serif;
             background: linear-gradient(135deg, #F3E9E9 0%, #E8D5E8 100%);
             min-height: 100vh;
         }
-        
+
         .font-handwriting {
             font-family: 'Kalam', cursive;
         }
-        
+
         /* Glassmorphism Effect */
         .glass {
             background: rgba(255, 255, 255, 0.25);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.18);
         }
-        
+
         /* Loading Animation */
         .loading-spinner {
             border: 2px solid #f3f3f3;
@@ -37,56 +48,69 @@
             height: 20px;
             animation: spin 1s linear infinite;
         }
-        
+
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
-        
+
         /* Floating Animation */
         @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(1deg); }
-            50% { transform: translateY(-5px) rotate(-1deg); }
+
+            0%,
+            100% {
+                transform: translateY(0px) rotate(1deg);
+            }
+
+            50% {
+                transform: translateY(-5px) rotate(-1deg);
+            }
         }
-        
+
         .animate-float {
             animation: float 4s ease-in-out infinite;
         }
-        
+
         /* Custom Input Styles */
         .custom-input {
             border: 1px solid rgba(75, 46, 94, 0.2);
             transition: all 0.3s ease;
         }
-        
+
         .custom-input:focus {
             border-color: #A94EBD;
             box-shadow: 0 0 0 2px rgba(169, 78, 189, 0.2);
         }
-        
+
         /* Button Styles */
         .btn-primary {
             background: linear-gradient(135deg, #A94EBD 0%, #4B2E5E 100%);
             transition: all 0.3s ease;
         }
-        
+
         .btn-primary:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(75, 46, 94, 0.15);
         }
     </style>
 </head>
+
 <body>
     <!-- Firebase Configuration -->
     <script>
         const firebaseConfig = {
-  apiKey: "AIzaSyBi4feeVAPUJJXe9qUV7j-SutsGFRnZBjo",
-  authDomain: "lifeappcy.firebaseapp.com",
-  projectId: "lifeappcy",
-  storageBucket: "lifeappcy.firebasestorage.app",
-  messagingSenderId: "598700486958",
-  appId: "1:598700486958:web:307187bca0966041e84abf",
-  measurementId: "G-57C80GJLZD"
+            apiKey: "AIzaSyBi4feeVAPUJJXe9qUV7j-SutsGFRnZBjo",
+            authDomain: "lifeappcy.firebaseapp.com",
+            projectId: "lifeappcy",
+            storageBucket: "lifeappcy.firebasestorage.app",
+            messagingSenderId: "598700486958",
+            appId: "1:598700486958:web:307187bca0966041e84abf",
+            measurementId: "G-57C80GJLZD"
         };
 
         firebase.initializeApp(firebaseConfig);
@@ -106,17 +130,19 @@
                     <p class="text-xs text-[#4B2E5E] opacity-70">Organize your life beautifully</p>
                 </div>
             </div>
-            
+
             <nav class="hidden md:flex space-x-6 text-xs text-[#7a5a5a] font-semibold tracking-wide">
                 <a class="hover:text-[#a87f7f] transition-colors" href="index.html">HOME</a>
                 <a class="hover:text-[#a87f7f] transition-colors" href="about.html">ABOUT</a>
                 <a class="hover:text-[#a87f7f] transition-colors" href="features.html">FEATURES</a>
+          
                 <a class="hover:text-[#a87f7f] transition-colors" href="#">HELP</a>
-                <a class="hover:text-[#a87f7f] transition-colors" href="#">REVIEWS</a>
+                <a class="hover:text-[#a87f7f] transition-colors" href="review.html">REVIEWS</a>
             </nav>
-            
+
             <div class="flex items-center space-x-3">
-                <a href="register.html" class="text-sm font-semibold text-[#4B2E5E] hover:text-[#A94EBD] transition-colors">REGISTER</a>
+                <a href="register.html"
+                    class="text-sm font-semibold text-[#4B2E5E] hover:text-[#A94EBD] transition-colors">REGISTER</a>
             </div>
         </div>
     </header>
@@ -127,7 +153,8 @@
         <div class="glass rounded-2xl p-8 w-full max-w-lg mb-10 md:mb-0">
             <div class="text-center mb-8">
                 <div class="animate-float mb-6">
-                    <div class="w-24 h-24 mx-auto bg-gradient-to-br from-[#A94EBD] to-[#4B2E5E] rounded-2xl shadow-2xl flex items-center justify-center">
+                    <div
+                        class="w-24 h-24 mx-auto bg-gradient-to-br from-[#A94EBD] to-[#4B2E5E] rounded-2xl shadow-2xl flex items-center justify-center">
                         <i class="fas fa-user-circle text-white text-3xl"></i>
                     </div>
                 </div>
@@ -136,43 +163,46 @@
                     Sign in to continue organizing your reminders, tasks and notes
                 </p>
             </div>
-            
+
             <form id="loginForm" class="space-y-4">
                 <div>
                     <label for="email" class="block text-sm font-semibold text-[#4B2E5E] mb-2">
                         <i class="fas fa-envelope mr-2"></i>Email Address
                     </label>
-                    <input type="email" id="email" name="email" placeholder="Enter your email" 
-                           class="w-full custom-input rounded-xl px-4 py-3 text-sm focus:outline-none transition-all" required>
+                    <input type="email" id="email" name="email" placeholder="Enter your email"
+                        class="w-full custom-input rounded-xl px-4 py-3 text-sm focus:outline-none transition-all"
+                        required>
                 </div>
-                
+
                 <div>
                     <label for="password" class="block text-sm font-semibold text-[#4B2E5E] mb-2">
                         <i class="fas fa-lock mr-2"></i>Password
                     </label>
-                    <input type="password" id="password" name="password" placeholder="Enter your password" 
-                           class="w-full custom-input rounded-xl px-4 py-3 text-sm focus:outline-none transition-all" required>
+                    <input type="password" id="password" name="password" placeholder="Enter your password"
+                        class="w-full custom-input rounded-xl px-4 py-3 text-sm focus:outline-none transition-all"
+                        required>
                 </div>
-                
+
                 <div class="flex items-center justify-between mt-3">
                     <div class="flex items-center space-x-2">
-                        <input class="w-4 h-4 border border-[#4B2E5E] rounded-sm" id="remember" type="checkbox"/>
+                        <input class="w-4 h-4 border border-[#4B2E5E] rounded-sm" id="remember" type="checkbox" />
                         <label class="text-xs text-[#4B2E5E] select-none" for="remember">Remember me for 31 days</label>
                     </div>
                     <a href="forgot-password.html" class="text-xs text-[#A94EBD] hover:underline">Forgot password?</a>
                 </div>
-                
+
                 <button type="submit" class="w-full btn-primary text-white font-semibold px-6 py-3 rounded-xl mt-6">
                     <i class="fas fa-sign-in-alt mr-2"></i>Login
                 </button>
-                
+
                 <p class="text-xs text-[#4B2E5E] text-center mt-4">
-                    Don't have an account? <a href="register.html" class="font-semibold text-[#A94EBD] hover:underline">Register now</a>
+                    Don't have an account? <a href="register.html"
+                        class="font-semibold text-[#A94EBD] hover:underline">Register now</a>
                 </p>
-                
+
                 <div id="errorMessage" class="mt-4 text-red-600 text-sm hidden"></div>
                 <div id="successMessage" class="mt-4 text-green-600 text-sm hidden"></div>
-                
+
                 <div id="loadingIndicator" class="mt-4 hidden">
                     <div class="flex items-center justify-center space-x-2">
                         <div class="loading-spinner"></div>
@@ -181,7 +211,7 @@
                 </div>
             </form>
         </div>
-        
+
         <!-- Illustration Section -->
         <div class="w-full max-w-md animate-float">
             <img src="imeges/Login/Login Image.png" alt="Login Illustration" class="w-full h-auto">
@@ -203,7 +233,7 @@
                         </p>
                     </div>
                 </div>
-                
+
                 <div class="flex flex-col md:flex-row md:space-x-12 text-sm text-[#4B2E5E] font-semibold">
                     <div>
                         <p class="mb-3 font-bold text-base">Quick Links</p>
@@ -217,64 +247,69 @@
                     <div>
                         <p class="mb-3 font-bold text-base">Connect</p>
                         <div class="flex space-x-4 text-lg">
-                            <a class="hover:text-[#A94EBD] transition-colors" href="#"><i class="fab fa-facebook-f"></i></a>
-                            <a class="hover:text-[#A94EBD] transition-colors" href="#"><i class="fab fa-twitter"></i></a>
-                            <a class="hover:text-[#A94EBD] transition-colors" href="#"><i class="fab fa-instagram"></i></a>
-                            <a class="hover:text-[#A94EBD] transition-colors" href="#"><i class="fab fa-linkedin"></i></a>
+                            <a class="hover:text-[#A94EBD] transition-colors" href="#"><i
+                                    class="fab fa-facebook-f"></i></a>
+                            <a class="hover:text-[#A94EBD] transition-colors" href="#"><i
+                                    class="fab fa-twitter"></i></a>
+                            <a class="hover:text-[#A94EBD] transition-colors" href="#"><i
+                                    class="fab fa-instagram"></i></a>
+                            <a class="hover:text-[#A94EBD] transition-colors" href="#"><i
+                                    class="fab fa-linkedin"></i></a>
                         </div>
                     </div>
                 </div>
             </div>
-            
+
             <div class="mt-8 pt-6 border-t border-[#4B2E5E] border-opacity-20 text-center">
-                <p class="text-xs text-[#4B2E5E] opacity-70">© 2025 Life. All rights reserved. Website by Ravindu Prakrama Sunimal</p>
+                <p class="text-xs text-[#4B2E5E] opacity-70">© 2025 Life. All rights reserved. Website by Ravindu
+                    Prakrama Sunimal</p>
             </div>
         </div>
     </footer>
 
     <script>
         // Login form submission
-        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+        document.getElementById('loginForm').addEventListener('submit', async function (e) {
             e.preventDefault();
-            
+
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
-            
+
             const errorMessage = document.getElementById('errorMessage');
             const successMessage = document.getElementById('successMessage');
             const loadingIndicator = document.getElementById('loadingIndicator');
-            
+
             // Reset messages
             errorMessage.classList.add('hidden');
             successMessage.classList.add('hidden');
             loadingIndicator.classList.remove('hidden');
-            
+
             try {
                 // Sign in user with Firebase Authentication
                 const userCredential = await auth.signInWithEmailAndPassword(email, password);
                 const user = userCredential.user;
-                
+
                 // Update last login timestamp in Firestore
                 await db.collection('users').doc(user.uid).update({
                     lastLogin: firebase.firestore.FieldValue.serverTimestamp()
                 });
-                
+
                 // Login successful
                 successMessage.textContent = 'Login successful! Redirecting to dashboard...';
                 successMessage.classList.remove('hidden');
                 loadingIndicator.classList.add('hidden');
-                
+
                 // Redirect to dashboard after 2 seconds
                 setTimeout(() => {
                     window.location.href = 'dashboard.html';
                 }, 2000);
-                
+
             } catch (error) {
                 loadingIndicator.classList.add('hidden');
                 const errorCode = error.code;
                 let errorText = '';
-                
-                switch(errorCode) {
+
+                switch (errorCode) {
                     case 'auth/invalid-email':
                         errorText = 'Invalid email address.';
                         break;
@@ -290,11 +325,12 @@
                     default:
                         errorText = error.message;
                 }
-                
+
                 errorMessage.innerHTML = errorText;
                 errorMessage.classList.remove('hidden');
             }
         });
     </script>
 </body>
+
 </html>

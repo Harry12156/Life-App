@@ -1,0 +1,66 @@
+{
+  "name": "Life - Organize Your Life Beautifully",
+  "short_name": "Life",
+  "description": "A beautiful reminder and task management app to help you organize your life and never miss what matters most",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F3E9E9",
+  "theme_color": "#A94EBD",
+  "orientation": "portrait-primary",
+  "categories": ["productivity", "lifestyle", "utilities"],
+  "lang": "en",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "image.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "image.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "imeges/Hom Page/Hero Image.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Life App Homepage"
+    },
+    {
+      "src": "imeges/Login/Login Image.png",
+      "sizes": "750x1334",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Life App Login"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Todo List",
+      "short_name": "Todo",
+      "description": "Access your todo list",
+      "url": "/Todo.html",
+      "icons": [{ "src": "image.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Calendar",
+      "short_name": "Calendar",
+      "description": "View your calendar",
+      "url": "/calendar.html",
+      "icons": [{ "src": "image.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Reminders",
+      "short_name": "Reminders",
+      "description": "Manage your reminders",
+      "url": "/reminders.html",
+      "icons": [{ "src": "image.png", "sizes": "96x96" }]
+    }
+  ]
+}

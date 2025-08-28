@@ -1,6 +1,6 @@
-
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,25 +10,35 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="./imeges/Life Logo.png">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#A94EBD">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Life">
+    <link rel="apple-touch-icon" href="/imeges/Life Logo.png">
+    <meta name="description" content="Learn about Life - Your beautiful reminder and task management app">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Kalam:wght@400;700&display=swap"
+        rel="stylesheet">
     <style>
         body {
             font-family: 'Montserrat', sans-serif;
             background: linear-gradient(135deg, #F3E9E9 0%, #E8D5E8 100%);
             min-height: 100vh;
         }
-        
+
         .font-handwriting {
             font-family: 'Kalam', cursive;
         }
-        
+
         /* Glassmorphism Effect */
         .glass {
             background: rgba(255, 255, 255, 0.25);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.18);
         }
-        
+
         /* Calendar Day Styles */
         .calendar-day {
             width: 32px;
@@ -41,20 +51,20 @@
             transition: all 0.2s ease;
             border-radius: 50%;
         }
-        
+
         .calendar-day:hover {
             background-color: rgba(169, 78, 189, 0.1);
         }
-        
+
         .calendar-day.today {
             background-color: rgba(169, 78, 189, 0.2);
             font-weight: 600;
         }
-        
+
         .calendar-day.event {
             position: relative;
         }
-        
+
         .calendar-day.event::after {
             content: '';
             position: absolute;
@@ -66,13 +76,13 @@
             background-color: #A94EBD;
             border-radius: 50%;
         }
-        
+
         .calendar-day.selected {
             background: linear-gradient(135deg, #A94EBD 0%, #4B2E5E 100%);
             color: white;
             font-weight: 600;
         }
-        
+
         /* Feature Navigation Styles */
         .feature-item {
             transition: all 0.3s ease;
@@ -80,25 +90,25 @@
             padding: 12px;
             border-radius: 8px;
         }
-        
+
         .feature-item:hover {
             color: #a87f7f;
             background-color: rgba(168, 127, 127, 0.1);
             transform: translateY(-2px);
         }
-        
+
         .feature-item.active {
             color: #a87f7f;
             background-color: rgba(168, 127, 127, 0.15);
             font-weight: 600;
         }
-        
+
         /* Modal Styles */
         .modal {
             transition: opacity 0.3s ease, visibility 0.3s ease;
             backdrop-filter: blur(5px);
         }
-        
+
         /* Event Badge */
         .event-badge {
             width: 24px;
@@ -113,7 +123,7 @@
             margin-right: 8px;
             flex-shrink: 0;
         }
-        
+
         /* Month Calendar */
         .month-calendar {
             background-color: rgba(255, 255, 255, 0.5);
@@ -122,12 +132,12 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
             transition: all 0.3s ease;
         }
-        
+
         .month-calendar:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
         }
-        
+
         /* Event Card */
         .event-card {
             background: rgba(255, 255, 255, 0.7);
@@ -136,12 +146,12 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
             transition: all 0.3s ease;
         }
-        
+
         .event-card:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-        
+
         /* Loading Animation */
         .loading-spinner {
             border: 2px solid #f3f3f3;
@@ -151,12 +161,17 @@
             height: 20px;
             animation: spin 1s linear infinite;
         }
-        
+
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
-        
+
         /* Logo Image */
         .logo-image {
             width: 110px;
@@ -165,17 +180,18 @@
         }
     </style>
 </head>
+
 <body class="min-h-screen flex flex-col">
     <!-- Firebase Configuration -->
     <script>
         const firebaseConfig = {
-  apiKey: "AIzaSyBi4feeVAPUJJXe9qUV7j-SutsGFRnZBjo",
-  authDomain: "lifeappcy.firebaseapp.com",
-  projectId: "lifeappcy",
-  storageBucket: "lifeappcy.firebasestorage.app",
-  messagingSenderId: "598700486958",
-  appId: "1:598700486958:web:307187bca0966041e84abf",
-  measurementId: "G-57C80GJLZD"
+            apiKey: "AIzaSyBi4feeVAPUJJXe9qUV7j-SutsGFRnZBjo",
+            authDomain: "lifeappcy.firebaseapp.com",
+            projectId: "lifeappcy",
+            storageBucket: "lifeappcy.firebasestorage.app",
+            messagingSenderId: "598700486958",
+            appId: "1:598700486958:web:307187bca0966041e84abf",
+            measurementId: "G-57C80GJLZD"
         };
 
         firebase.initializeApp(firebaseConfig);
@@ -188,35 +204,41 @@
         <div class="flex items-center justify-between max-w-7xl mx-auto">
             <div class="flex items-center space-x-3">
                 <div class="rounded-xl flex items-center justify-center">
-                    <img src="/imeges/Life Logo.png" alt="Life Logo" class="logo-image" onerror="this.style.display='none'">
+                    <img src="/imeges/Life Logo.png" alt="Life Logo" class="logo-image"
+                        onerror="this.style.display='none'">
                 </div>
                 <div>
                     <span class="font-bold text-[#4B2E5E] text-2xl">Life Calendar</span>
                     <p class="text-xs text-[#4B2E5E] opacity-70">Plan your days with ease</p>
                 </div>
             </div>
-            
+
             <nav class="hidden md:flex space-x-6 text-xs text-[#7a5a5a] font-semibold tracking-wide">
                 <a class="hover:text-[#a87f7f] transition-colors" href="index.html">HOME</a>
                 <a class="hover:text-[#a87f7f] transition-colors" href="about.html">ABOUT</a>
                 <a class="hover:text-[#a87f7f] transition-colors active" href="features.html">FEATURES</a>
+               
                 <a class="hover:text-[#a87f7f] transition-colors" href="#">HELP</a>
-                <a class="hover:text-[#a87f7f] transition-colors" href="#">REVIEWS</a>
+                <a class="hover:text-[#a87f7f] transition-colors" href="review.html">REVIEWS</a>
             </nav>
-            
+
             <div class="flex items-center space-x-3" id="auth-buttons">
-                <a href="login.html" id="login-btn" class="text-sm font-semibold text-[#4B2E5E] hover:text-[#A94EBD] transition-colors">LOGIN</a>
-                <a href="register.html" id="signup-btn" class="bg-gradient-to-r from-[#A94EBD] to-[#4B2E5E] text-white text-sm font-semibold px-4 py-2 rounded-lg hover:shadow-lg transition-all">SIGN UP</a>
+                <a href="login.html" id="login-btn"
+                    class="text-sm font-semibold text-[#4B2E5E] hover:text-[#A94EBD] transition-colors">LOGIN</a>
+                <a href="register.html" id="signup-btn"
+                    class="bg-gradient-to-r from-[#A94EBD] to-[#4B2E5E] text-white text-sm font-semibold px-4 py-2 rounded-lg hover:shadow-lg transition-all">SIGN
+                    UP</a>
             </div>
-            
+
             <div class="hidden items-center space-x-3" id="user-profile">
                 <div class="flex items-center space-x-2">
                     <i class="fas fa-user-circle text-[#4B2E5E] text-xl"></i>
                     <span id="user-name" class="text-sm font-semibold text-[#4B2E5E]"></span>
                 </div>
-                <button id="logout-btn" class="bg-red-500 text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-red-600 transition-colors">LOGOUT</button>
+                <button id="logout-btn"
+                    class="bg-red-500 text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-red-600 transition-colors">LOGOUT</button>
             </div>
-            
+
             <!-- Mobile menu button -->
             <button class="md:hidden text-[#4B2E5E]" id="mobile-menu-btn">
                 <i class="fas fa-bars"></i>
@@ -230,8 +252,9 @@
             <a class="hover:text-[#a87f7f] transition-colors" href="index.html">HOME</a>
             <a class="hover:text-[#a87f7f] transition-colors" href="about.html">ABOUT</a>
             <a class="hover:text-[#a87f7f] transition-colors active" href="features.html">FEATURES</a>
+            
             <a class="hover:text-[#a87f7f] transition-colors" href="#">HELP</a>
-            <a class="hover:text-[#a87f7f] transition-colors" href="#">REVIEWS</a>
+            <a class="hover:text-[#a87f7f] transition-colors" href="review.html">REVIEWS</a>
         </div>
     </nav>
 
@@ -257,7 +280,8 @@
 
     <!-- Add Event Button (Visible only when logged in) -->
     <div class="max-w-md mx-auto mt-4 px-6 hidden" id="add-event-container">
-        <button id="add-event-btn" class="w-full bg-gradient-to-r from-[#A94EBD] to-[#4B2E5E] text-white font-semibold py-3 rounded-xl hover:shadow-lg transition-all flex items-center justify-center space-x-2">
+        <button id="add-event-btn"
+            class="w-full bg-gradient-to-r from-[#A94EBD] to-[#4B2E5E] text-white font-semibold py-3 rounded-xl hover:shadow-lg transition-all flex items-center justify-center space-x-2">
             <i class="fas fa-plus"></i>
             <span>Add New Event</span>
         </button>
@@ -268,10 +292,12 @@
         <div class="flex justify-between items-center mb-4">
             <p class="text-sm text-[#4B2E5E] font-semibold">Calendar <span id="current-year">2025</span></p>
             <div class="flex space-x-2">
-                <button id="prev-year" aria-label="Previous year" class="glass w-8 h-8 rounded-full flex items-center justify-center text-[#4B2E5E] hover:text-[#A94EBD] hover:bg-[#A94EBD] hover:text-white transition-all">
+                <button id="prev-year" aria-label="Previous year"
+                    class="glass w-8 h-8 rounded-full flex items-center justify-center text-[#4B2E5E] hover:text-[#A94EBD] hover:bg-[#A94EBD] hover:text-white transition-all">
                     <i class="fas fa-chevron-left"></i>
                 </button>
-                <button id="next-year" aria-label="Next year" class="glass w-8 h-8 rounded-full flex items-center justify-center text-[#4B2E5E] hover:text-[#A94EBD] hover:bg-[#A94EBD] hover:text-white transition-all">
+                <button id="next-year" aria-label="Next year"
+                    class="glass w-8 h-8 rounded-full flex items-center justify-center text-[#4B2E5E] hover:text-[#A94EBD] hover:bg-[#A94EBD] hover:text-white transition-all">
                     <i class="fas fa-chevron-right"></i>
                 </button>
             </div>
@@ -284,17 +310,20 @@
     <!-- Current month detailed calendar -->
     <section class="max-w-md mx-auto mt-8 px-6">
         <div class="flex justify-between items-center mb-4">
-            <p id="current-month" class="text-[#4B2E5E] font-extrabold text-xl tracking-wider select-none">JANUARY 2025</p>
+            <p id="current-month" class="text-[#4B2E5E] font-extrabold text-xl tracking-wider select-none">JANUARY 2025
+            </p>
             <div class="flex space-x-2">
-                <button id="prev-month" aria-label="Previous month" class="glass w-8 h-8 rounded-full flex items-center justify-center text-[#4B2E5E] hover:text-[#A94EBD] hover:bg-[#A94EBD] hover:text-white transition-all">
+                <button id="prev-month" aria-label="Previous month"
+                    class="glass w-8 h-8 rounded-full flex items-center justify-center text-[#4B2E5E] hover:text-[#A94EBD] hover:bg-[#A94EBD] hover:text-white transition-all">
                     <i class="fas fa-chevron-left"></i>
                 </button>
-                <button id="next-month" aria-label="Next month" class="glass w-8 h-8 rounded-full flex items-center justify-center text-[#4B2E5E] hover:text-[#A94EBD] hover:bg-[#A94EBD] hover:text-white transition-all">
+                <button id="next-month" aria-label="Next month"
+                    class="glass w-8 h-8 rounded-full flex items-center justify-center text-[#4B2E5E] hover:text-[#A94EBD] hover:bg-[#A94EBD] hover:text-white transition-all">
                     <i class="fas fa-chevron-right"></i>
                 </button>
             </div>
         </div>
-        
+
         <div class="grid grid-cols-7 text-xs text-[#4B2E5E] font-semibold mb-2 select-none">
             <span class="text-[#d94e4e]">S</span>
             <span>M</span>
@@ -304,7 +333,7 @@
             <span>F</span>
             <span>S</span>
         </div>
-        
+
         <div id="month-days" class="grid grid-cols-7 text-xs text-[#4B2E5E] gap-y-1 select-none">
             <!-- Days will be generated by JavaScript -->
         </div>
@@ -329,7 +358,8 @@
     </section>
 
     <!-- Add Event Modal -->
-    <div id="event-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 modal opacity-0 invisible">
+    <div id="event-modal"
+        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 modal opacity-0 invisible">
         <div class="glass rounded-2xl p-8 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-2xl font-semibold text-[#4B2E5E]" id="modal-title">Add New Event</h3>
@@ -344,34 +374,44 @@
                     <label for="event-title" class="block text-sm font-semibold text-[#4B2E5E] mb-2">
                         <i class="fas fa-heading mr-2"></i>Event Title
                     </label>
-                    <input type="text" id="event-title" class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#A94EBD] focus:border-transparent transition-all" placeholder="Enter event title..." required>
+                    <input type="text" id="event-title"
+                        class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#A94EBD] focus:border-transparent transition-all"
+                        placeholder="Enter event title..." required>
                 </div>
                 <div class="mb-6">
                     <label for="event-description" class="block text-sm font-semibold text-[#4B2E5E] mb-2">
                         <i class="fas fa-align-left mr-2"></i>Description
                     </label>
-                    <textarea id="event-description" rows="4" class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#A94EBD] focus:border-transparent font-handwriting transition-all" placeholder="Add details about your event..."></textarea>
+                    <textarea id="event-description" rows="4"
+                        class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#A94EBD] focus:border-transparent font-handwriting transition-all"
+                        placeholder="Add details about your event..."></textarea>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                     <div>
                         <label for="event-date-input" class="block text-sm font-semibold text-[#4B2E5E] mb-2">
                             <i class="fas fa-calendar mr-2"></i>Date
                         </label>
-                        <input type="date" id="event-date-input" class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#A94EBD] focus:border-transparent transition-all" required>
+                        <input type="date" id="event-date-input"
+                            class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#A94EBD] focus:border-transparent transition-all"
+                            required>
                     </div>
                     <div>
                         <label for="event-time" class="block text-sm font-semibold text-[#4B2E5E] mb-2">
                             <i class="fas fa-clock mr-2"></i>Time
                         </label>
-                        <input type="time" id="event-time" class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#A94EBD] focus:border-transparent transition-all">
+                        <input type="time" id="event-time"
+                            class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#A94EBD] focus:border-transparent transition-all">
                     </div>
                 </div>
                 <div class="flex justify-end space-x-4">
-                    <button type="button" id="cancel-event" class="px-6 py-3 text-sm font-semibold text-[#4B2E5E] hover:text-[#A94EBD] transition-colors">Cancel</button>
-                    <button type="button" id="delete-event" class="px-6 py-3 bg-red-500 text-white text-sm font-semibold rounded-xl hover:bg-red-600 transition-all hidden">
+                    <button type="button" id="cancel-event"
+                        class="px-6 py-3 text-sm font-semibold text-[#4B2E5E] hover:text-[#A94EBD] transition-colors">Cancel</button>
+                    <button type="button" id="delete-event"
+                        class="px-6 py-3 bg-red-500 text-white text-sm font-semibold rounded-xl hover:bg-red-600 transition-all hidden">
                         <i class="fas fa-trash mr-2"></i>Delete
                     </button>
-                    <button type="submit" id="save-event" class="px-8 py-3 bg-gradient-to-r from-[#A94EBD] to-[#4B2E5E] text-white text-sm font-semibold rounded-xl hover:shadow-lg transition-all">
+                    <button type="submit" id="save-event"
+                        class="px-8 py-3 bg-gradient-to-r from-[#A94EBD] to-[#4B2E5E] text-white text-sm font-semibold rounded-xl hover:shadow-lg transition-all">
                         <i class="fas fa-save mr-2"></i>Save Event
                     </button>
                 </div>
@@ -390,7 +430,8 @@
             <div class="flex flex-col md:flex-row md:justify-between md:items-start space-y-6 md:space-y-0">
                 <div class="flex items-center space-x-4">
                     <div class="rounded-xl flex items-center justify-center">
-                        <img src="/imeges/Life Logo.png" alt="Life Logo" class="logo-image" onerror="this.style.display='none'">
+                        <img src="/imeges/Life Logo.png" alt="Life Logo" class="logo-image"
+                            onerror="this.style.display='none'">
                     </div>
                     <div>
                         <h2 class="text-[#4B2E5E] font-bold text-2xl">Life Calendar</h2>
@@ -399,7 +440,7 @@
                         </p>
                     </div>
                 </div>
-                
+
                 <div class="flex flex-col md:flex-row md:space-x-12 text-sm text-[#4B2E5E] font-semibold">
                     <div>
                         <p class="mb-3 font-bold text-base">Quick Links</p>
@@ -413,27 +454,32 @@
                     <div>
                         <p class="mb-3 font-bold text-base">Connect</p>
                         <div class="flex space-x-4 text-xl">
-                            <a class="hover:text-[#A94EBD] transition-colors" href="#"><i class="fab fa-facebook-f"></i></a>
-                            <a class="hover:text-[#A94EBD] transition-colors" href="#"><i class="fab fa-twitter"></i></a>
-                            <a class="hover:text-[#A94EBD] transition-colors" href="#"><i class="fab fa-instagram"></i></a>
-                            <a class="hover:text-[#A94EBD] transition-colors" href="#"><i class="fab fa-linkedin"></i></a>
+                            <a class="hover:text-[#A94EBD] transition-colors" href="#"><i
+                                    class="fab fa-facebook-f"></i></a>
+                            <a class="hover:text-[#A94EBD] transition-colors" href="#"><i
+                                    class="fab fa-twitter"></i></a>
+                            <a class="hover:text-[#A94EBD] transition-colors" href="#"><i
+                                    class="fab fa-instagram"></i></a>
+                            <a class="hover:text-[#A94EBD] transition-colors" href="#"><i
+                                    class="fab fa-linkedin"></i></a>
                         </div>
                     </div>
                 </div>
             </div>
-            
+
             <div class="mt-8 pt-6 border-t border-[#4B2E5E] border-opacity-20 text-center">
-                <p class="text-sm text-[#4B2E5E] opacity-70">© 2025 Life. All rights reserved. Website by Ravindu Prakrama Sunimal</p>
+                <p class="text-sm text-[#4B2E5E] opacity-70">© 2025 Life. All rights reserved. Website by Ravindu
+                    Prakrama Sunimal</p>
             </div>
         </div>
     </footer>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // Firebase references
             const auth = firebase.auth();
             const db = firebase.firestore();
-            
+
             // Get current date
             const today = new Date();
             let currentYear = today.getFullYear();
@@ -442,7 +488,7 @@
             let selectedDay = null;
             let events = {};
             let currentUser = null;
-            
+
             // DOM elements
             const authButtons = document.getElementById('auth-buttons');
             const userProfile = document.getElementById('user-profile');
@@ -470,13 +516,13 @@
             const mobileMenuBtn = document.getElementById('mobile-menu-btn');
             const mobileNav = document.getElementById('mobile-nav');
             const toastContainer = document.getElementById('toast-container');
-            
+
             // Initialize calendar
             updateYearCalendar();
             updateMonthCalendar();
             updateMonthTitle();
             updateMonthEventsSummary();
-            
+
             // Auth state listener
             auth.onAuthStateChanged(user => {
                 if (user) {
@@ -486,7 +532,7 @@
                     userProfile.classList.remove('hidden');
                     userName.textContent = user.displayName || user.email;
                     addEventContainer.classList.remove('hidden');
-                    
+
                     // Load user's events
                     loadEvents();
                 } else {
@@ -501,29 +547,29 @@
                     updateMonthEventsSummary();
                 }
             });
-            
+
             // Auth button handlers
             loginBtn.addEventListener('click', () => {
                 window.location.href = 'login.html';
             });
-            
+
             signupBtn.addEventListener('click', () => {
                 window.location.href = 'register.html';
             });
-            
+
             logoutBtn.addEventListener('click', () => {
                 auth.signOut().then(() => {
                     window.location.href = 'login.html';
                 });
             });
-            
+
             // Mobile menu toggle
             if (mobileMenuBtn && mobileNav) {
                 mobileMenuBtn.addEventListener('click', () => {
                     mobileNav.classList.toggle('hidden');
                 });
             }
-            
+
             // Year navigation
             document.getElementById('prev-year').addEventListener('click', () => {
                 currentYear--;
@@ -532,7 +578,7 @@
                 updateMonthTitle();
                 updateMonthEventsSummary();
             });
-            
+
             document.getElementById('next-year').addEventListener('click', () => {
                 currentYear++;
                 document.getElementById('current-year').textContent = currentYear;
@@ -540,7 +586,7 @@
                 updateMonthTitle();
                 updateMonthEventsSummary();
             });
-            
+
             // Month navigation
             document.getElementById('prev-month').addEventListener('click', () => {
                 currentMonth--;
@@ -554,7 +600,7 @@
                 updateMonthCalendar();
                 updateMonthEventsSummary();
             });
-            
+
             document.getElementById('next-month').addEventListener('click', () => {
                 currentMonth++;
                 if (currentMonth > 11) {
@@ -567,12 +613,12 @@
                 updateMonthCalendar();
                 updateMonthEventsSummary();
             });
-            
+
             // Add event button
             addEventBtn.addEventListener('click', () => {
                 openAddEventModal();
             });
-            
+
             // Modal handlers
             closeModal.addEventListener('click', closeEventModal);
             cancelEvent.addEventListener('click', closeEventModal);
@@ -581,41 +627,41 @@
                     closeEventModal();
                 }
             });
-            
+
             // Event form submission
             eventForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
-                
+
                 const title = eventTitle.value.trim();
                 const description = eventDescription.value.trim();
                 const time = eventTime.value;
                 const date = eventDateInput.value;
-                
+
                 if (!title) {
                     showToast('Event title is required', 'error');
                     return;
                 }
-                
+
                 if (!date) {
                     showToast('Event date is required', 'error');
                     return;
                 }
-                
+
                 // Disable save button during submission
                 saveEvent.disabled = true;
                 saveEvent.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Saving...';
-                
+
                 const eventData = {
                     title: title,
                     date: formatDateForStorage(date),
                     userId: currentUser.uid,
                     updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                 };
-                
+
                 // Add optional fields
                 if (description) eventData.description = description;
                 if (time) eventData.time = time;
-                
+
                 try {
                     if (eventId.value) {
                         // Update existing event
@@ -627,7 +673,7 @@
                         await db.collection('events').add(eventData);
                         showToast('Event created successfully!', 'success');
                     }
-                    
+
                     closeEventModal();
                     loadEvents();
                 } catch (error) {
@@ -638,7 +684,7 @@
                     saveEvent.innerHTML = '<i class="fas fa-save mr-2"></i>Save Event';
                 }
             });
-            
+
             // Delete event
             deleteEvent.addEventListener('click', async () => {
                 if (confirm('Are you sure you want to delete this event?')) {
@@ -653,20 +699,20 @@
                     }
                 }
             });
-            
+
             // Helper function to format date for storage (YYYY-M-D)
             function formatDateForStorage(dateString) {
                 const date = new Date(dateString);
-                return `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`;
+                return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
             }
-            
+
             // Helper function to format date for display
             function formatDateForDisplay(dateString) {
                 const date = new Date(dateString);
                 const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
                 return date.toLocaleDateString('en-US', options);
             }
-            
+
             // Helper function to format time for display
             function formatTimeForDisplay(timeString) {
                 if (!timeString) return '';
@@ -676,32 +722,32 @@
                 const hour12 = hour % 12 || 12;
                 return `${hour12}:${minutes} ${ampm}`;
             }
-            
+
             function updateMonthTitle() {
-                const monthNames = ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE', 
-                                    'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'];
+                const monthNames = ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE',
+                    'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'];
                 document.getElementById('current-month').textContent = `${monthNames[currentMonth]} ${currentYear}`;
             }
-            
+
             function updateYearCalendar() {
                 const yearContainer = document.getElementById('year-calendar');
                 yearContainer.innerHTML = '';
-                
-                const monthNames = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 
-                                    'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
-                
+
+                const monthNames = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN',
+                    'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+
                 // Show all 12 months in 3x4 grid
                 for (let i = 0; i < 12; i++) {
                     const monthDiv = document.createElement('div');
                     monthDiv.className = 'month-calendar';
-                    
+
                     const monthName = document.createElement('p');
                     monthName.className = 'text-center mb-2 font-semibold text-[#4B2E5E]';
                     monthName.textContent = monthNames[i];
-                    
+
                     const daysGrid = document.createElement('div');
                     daysGrid.className = 'grid grid-cols-7 gap-1 text-center text-[10px]';
-                    
+
                     // Add day names
                     ['S', 'M', 'T', 'W', 'T', 'F', 'S'].forEach(day => {
                         const daySpan = document.createElement('span');
@@ -709,116 +755,116 @@
                         daySpan.textContent = day;
                         daysGrid.appendChild(daySpan);
                     });
-                    
+
                     // Get first day of month and total days
                     const firstDay = new Date(currentYear, i, 1).getDay();
                     const daysInMonth = new Date(currentYear, i + 1, 0).getDate();
-                    
+
                     // Add empty cells for days before the first day of the month
                     for (let j = 0; j < firstDay; j++) {
                         const emptySpan = document.createElement('span');
                         daysGrid.appendChild(emptySpan);
                     }
-                    
+
                     // Add days of the month
                     for (let day = 1; day <= daysInMonth; day++) {
                         const daySpan = document.createElement('span');
                         daySpan.className = 'py-1';
-                        
+
                         // Check if this day has events
-                        const dateKey = `${currentYear}-${i+1}-${day}`;
+                        const dateKey = `${currentYear}-${i + 1}-${day}`;
                         const hasEvent = events[dateKey] && events[dateKey].length > 0;
-                        
+
                         if (hasEvent) {
                             daySpan.classList.add('text-[#A94EBD]', 'font-bold');
                         }
-                        
+
                         // Highlight current month
                         if (i === currentMonth) {
                             daySpan.classList.add('font-semibold');
                         }
-                        
+
                         // Highlight today if it's the current month and year
-                        if (currentYear === today.getFullYear() && 
-                            i === today.getMonth() && 
+                        if (currentYear === today.getFullYear() &&
+                            i === today.getMonth() &&
                             day === today.getDate()) {
                             daySpan.classList.add('text-[#d94e4e]', 'font-bold');
                         }
-                        
+
                         daySpan.textContent = day;
                         daysGrid.appendChild(daySpan);
                     }
-                    
+
                     monthDiv.appendChild(monthName);
                     monthDiv.appendChild(daysGrid);
                     yearContainer.appendChild(monthDiv);
                 }
             }
-            
+
             function updateMonthCalendar() {
                 const monthDaysContainer = document.getElementById('month-days');
                 monthDaysContainer.innerHTML = '';
-                
+
                 // Get first day of month and total days
                 const firstDay = new Date(currentYear, currentMonth, 1).getDay();
                 const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-                
+
                 // Add empty cells for days before the first day of the month
                 for (let i = 0; i < firstDay; i++) {
                     const emptyDay = document.createElement('div');
                     emptyDay.className = 'calendar-day';
                     monthDaysContainer.appendChild(emptyDay);
                 }
-                
+
                 // Add days of the month
                 for (let day = 1; day <= daysInMonth; day++) {
                     const dayDiv = document.createElement('div');
                     dayDiv.className = 'calendar-day';
                     dayDiv.textContent = day;
                     dayDiv.dataset.day = day;
-                    
+
                     // Check if this day has events
-                    const dateKey = `${currentYear}-${currentMonth+1}-${day}`;
+                    const dateKey = `${currentYear}-${currentMonth + 1}-${day}`;
                     const hasEvent = events[dateKey] && events[dateKey].length > 0;
-                    
+
                     if (hasEvent) {
                         dayDiv.classList.add('event');
                     }
-                    
+
                     // Highlight today if it's the current month and year
-                    if (currentYear === today.getFullYear() && 
-                        currentMonth === today.getMonth() && 
+                    if (currentYear === today.getFullYear() &&
+                        currentMonth === today.getMonth() &&
                         day === today.getDate()) {
                         dayDiv.classList.add('today');
                     }
-                    
+
                     // Highlight selected day
-                    if (selectedDay && selectedDay.getDate() === day && 
-                        selectedDay.getMonth() === currentMonth && 
+                    if (selectedDay && selectedDay.getDate() === day &&
+                        selectedDay.getMonth() === currentMonth &&
                         selectedDay.getFullYear() === currentYear) {
                         dayDiv.classList.add('selected');
                     }
-                    
+
                     // Add click handler
                     dayDiv.addEventListener('click', () => {
                         // Remove selected class from all days
                         document.querySelectorAll('.calendar-day').forEach(d => {
                             d.classList.remove('selected');
                         });
-                        
+
                         // Add selected class to clicked day
                         dayDiv.classList.add('selected');
-                        
+
                         // Set selected day
                         selectedDay = new Date(currentYear, currentMonth, day);
-                        
+
                         // Update events display
                         updateEvents();
                     });
-                    
+
                     monthDaysContainer.appendChild(dayDiv);
                 }
-                
+
                 // If no day is selected, select today if it's in the current month
                 if (!selectedDay && currentYear === today.getFullYear() && currentMonth === today.getMonth()) {
                     const todayDiv = monthDaysContainer.querySelector(`.calendar-day.today`);
@@ -827,7 +873,7 @@
                     }
                 }
             }
-            
+
             async function loadEvents() {
                 if (!currentUser) {
                     events = {};
@@ -836,22 +882,22 @@
                     updateMonthEventsSummary();
                     return;
                 }
-                
+
                 try {
                     const snapshot = await db.collection('events')
                         .where('userId', '==', currentUser.uid)
                         .get();
-                    
+
                     events = {};
-                    
+
                     snapshot.forEach(doc => {
                         const eventData = doc.data();
                         const date = eventData.date; // Format: "YYYY-M-D"
-                        
+
                         if (!events[date]) {
                             events[date] = [];
                         }
-                        
+
                         events[date].push({
                             id: doc.id,
                             title: eventData.title,
@@ -860,7 +906,7 @@
                             date: eventData.date
                         });
                     });
-                    
+
                     updateMonthCalendar();
                     updateEvents();
                     updateMonthEventsSummary();
@@ -869,11 +915,11 @@
                     showToast('Error loading events. Please try again.', 'error');
                 }
             }
-            
+
             function updateEvents() {
                 const eventsContainer = document.getElementById('events-section');
                 eventsContainer.innerHTML = '';
-                
+
                 if (!selectedDay) {
                     // No day selected
                     const noSelectionDiv = document.createElement('div');
@@ -882,10 +928,10 @@
                     eventsContainer.appendChild(noSelectionDiv);
                     return;
                 }
-                
-                const dateKey = `${selectedDay.getFullYear()}-${selectedDay.getMonth()+1}-${selectedDay.getDate()}`;
+
+                const dateKey = `${selectedDay.getFullYear()}-${selectedDay.getMonth() + 1}-${selectedDay.getDate()}`;
                 const dayEvents = events[dateKey] || [];
-                
+
                 if (dayEvents.length === 0) {
                     // No events for selected day
                     const noEventsDiv = document.createElement('div');
@@ -897,52 +943,52 @@
                     dayEvents.forEach(event => {
                         const eventDiv = document.createElement('div');
                         eventDiv.className = 'event-card flex items-center justify-between';
-                        
+
                         const eventContent = document.createElement('div');
                         eventContent.className = 'flex items-center';
-                        
+
                         const badgeSpan = document.createElement('span');
                         badgeSpan.className = 'event-badge';
                         badgeSpan.textContent = selectedDay.getDate();
-                        
+
                         const eventText = document.createElement('div');
                         let eventDisplay = `<span class="font-medium">${event.title}</span>`;
                         if (event.time) {
                             eventDisplay = `<span class="text-xs bg-[#4B2E5E] text-white px-2 py-1 rounded-full mr-2">${formatTimeForDisplay(event.time)}</span>${eventDisplay}`;
                         }
                         eventText.innerHTML = eventDisplay;
-                        
+
                         eventContent.appendChild(badgeSpan);
                         eventContent.appendChild(eventText);
-                        
+
                         const editBtn = document.createElement('button');
                         editBtn.className = 'text-[#4B2E5E] hover:text-[#A94EBD] text-lg p-2 rounded-lg hover:bg-white';
                         editBtn.innerHTML = '<i class="fas fa-edit"></i>';
                         editBtn.addEventListener('click', () => {
                             openEditEventModal(event);
                         });
-                        
+
                         eventDiv.appendChild(eventContent);
                         eventDiv.appendChild(editBtn);
-                        
+
                         eventsContainer.appendChild(eventDiv);
                     });
                 }
             }
-            
+
             function updateMonthEventsSummary() {
                 monthEventsSummary.innerHTML = '';
-                
+
                 // Get all events for the current month
                 const monthEvents = [];
-                const monthKeyPrefix = `${currentYear}-${currentMonth+1}-`;
-                
+                const monthKeyPrefix = `${currentYear}-${currentMonth + 1}-`;
+
                 for (const date in events) {
                     if (date.startsWith(monthKeyPrefix)) {
                         monthEvents.push(...events[date]);
                     }
                 }
-                
+
                 if (monthEvents.length === 0) {
                     const noEventsDiv = document.createElement('div');
                     noEventsDiv.className = 'text-center py-2 italic text-[#4B2E5E] opacity-70';
@@ -951,154 +997,153 @@
                 } else {
                     const eventsList = document.createElement('ul');
                     eventsList.className = 'space-y-3';
-                    
+
                     monthEvents.forEach(event => {
                         const eventItem = document.createElement('li');
                         eventItem.className = 'flex items-start';
-                        
+
                         const eventDate = new Date(event.date.replace(/(\d+)-(\d+)-(\d+)/, '$1/$2/$3'));
                         const dateStr = eventDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                        
+
                         const eventInfo = document.createElement('div');
                         eventInfo.className = 'flex-1';
-                        
+
                         const eventHeader = document.createElement('div');
                         eventHeader.className = 'flex items-center mb-1';
-                        
+
                         const dateBadge = document.createElement('span');
                         dateBadge.className = 'bg-[#4B2E5E] text-white text-xs px-2 py-1 rounded mr-2';
                         dateBadge.textContent = dateStr;
-                        
+
                         const eventTitle = document.createElement('span');
                         eventTitle.className = 'font-medium text-[#4B2E5E]';
                         eventTitle.textContent = event.title;
-                        
+
                         eventHeader.appendChild(dateBadge);
                         eventHeader.appendChild(eventTitle);
-                        
+
                         if (event.time) {
                             const timeSpan = document.createElement('span');
                             timeSpan.className = 'text-xs text-[#4B2E5E] opacity-70 ml-2';
                             timeSpan.textContent = formatTimeForDisplay(event.time);
                             eventHeader.appendChild(timeSpan);
                         }
-                        
+
                         eventInfo.appendChild(eventHeader);
-                        
+
                         if (event.description) {
                             const descDiv = document.createElement('p');
                             descDiv.className = 'text-xs text-[#4B2E5E] opacity-70';
                             descDiv.textContent = event.description;
                             eventInfo.appendChild(descDiv);
                         }
-                        
+
                         eventItem.appendChild(eventInfo);
-                        
+
                         eventsList.appendChild(eventItem);
                     });
-                    
+
                     monthEventsSummary.appendChild(eventsList);
                 }
             }
-            
+
             function openAddEventModal() {
                 if (!currentUser) {
                     showToast('Please log in to create events', 'error');
                     return;
                 }
-                
+
                 // Reset form
                 eventForm.reset();
                 eventId.value = '';
-                
+
                 // Set default date to selected day or today
                 const defaultDate = selectedDay || today;
                 const formattedDate = defaultDate.toISOString().split('T')[0];
                 eventDateInput.value = formattedDate;
-                eventDate.value = `${defaultDate.getFullYear()}-${defaultDate.getMonth()+1}-${defaultDate.getDate()}`;
-                
+                eventDate.value = `${defaultDate.getFullYear()}-${defaultDate.getMonth() + 1}-${defaultDate.getDate()}`;
+
                 // Set modal title
-                const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
-                                   'July', 'August', 'September', 'October', 'November', 'December'];
+                const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                    'July', 'August', 'September', 'October', 'November', 'December'];
                 const dayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][defaultDate.getDay()];
                 modalTitle.textContent = `Add Event - ${dayName}, ${monthNames[defaultDate.getMonth()]} ${defaultDate.getDate()}, ${defaultDate.getFullYear()}`;
-                
+
                 // Hide delete button for new events
                 deleteEvent.classList.add('hidden');
-                
+
                 // Show modal
                 eventModal.classList.remove('invisible', 'opacity-0');
                 eventModal.classList.add('opacity-100');
-                
+
                 // Focus on title field
                 setTimeout(() => eventTitle.focus(), 100);
             }
-            
+
             function openEditEventModal(event) {
                 // Fill form with event data
                 eventId.value = event.id;
                 eventTitle.value = event.title;
                 eventDescription.value = event.description || '';
                 eventTime.value = event.time || '';
-                
+
                 // Parse the stored date (format: "YYYY-M-D")
                 const [year, month, day] = event.date.split('-').map(Number);
-                const dateObj = new Date(year, month-1, day);
+                const dateObj = new Date(year, month - 1, day);
                 const formattedDate = dateObj.toISOString().split('T')[0];
-                
+
                 eventDateInput.value = formattedDate;
                 eventDate.value = event.date;
-                
+
                 // Set modal title
-                const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
-                                   'July', 'August', 'September', 'October', 'November', 'December'];
+                const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                    'July', 'August', 'September', 'October', 'November', 'December'];
                 const dayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][dateObj.getDay()];
                 modalTitle.textContent = `Edit Event - ${dayName}, ${monthNames[dateObj.getMonth()]} ${dateObj.getDate()}, ${dateObj.getFullYear()}`;
-                
+
                 // Show delete button for existing events
                 deleteEvent.classList.remove('hidden');
-                
+
                 // Show modal
                 eventModal.classList.remove('invisible', 'opacity-0');
                 eventModal.classList.add('opacity-100');
-                
+
                 // Focus on title field
                 setTimeout(() => eventTitle.focus(), 100);
             }
-            
+
             function closeEventModal() {
                 eventModal.classList.remove('opacity-100');
                 eventModal.classList.add('opacity-0', 'invisible');
             }
-            
+
             function showToast(message, type = 'info') {
                 const toast = document.createElement('div');
-                toast.className = `glass rounded-xl p-4 mb-2 text-sm font-semibold transition-all transform translate-x-full opacity-0 shadow-lg ${
-                    type === 'success' ? 'text-green-600 border-l-4 border-green-500' : 
-                    type === 'error' ? 'text-red-600 border-l-4 border-red-500' : 
-                    'text-[#4B2E5E] border-l-4 border-[#A94EBD]'
-                }`;
-                
+                toast.className = `glass rounded-xl p-4 mb-2 text-sm font-semibold transition-all transform translate-x-full opacity-0 shadow-lg ${type === 'success' ? 'text-green-600 border-l-4 border-green-500' :
+                        type === 'error' ? 'text-red-600 border-l-4 border-red-500' :
+                            'text-[#4B2E5E] border-l-4 border-[#A94EBD]'
+                    }`;
+
                 const icons = {
                     success: 'fas fa-check-circle',
                     error: 'fas fa-exclamation-circle',
                     info: 'fas fa-info-circle'
                 };
-                
+
                 toast.innerHTML = `
                     <div class="flex items-center space-x-2">
                         <i class="${icons[type] || icons.info}"></i>
                         <span>${message}</span>
                     </div>
                 `;
-                
+
                 toastContainer.appendChild(toast);
-                
+
                 // Animate in
                 setTimeout(() => {
                     toast.classList.remove('translate-x-full', 'opacity-0');
                 }, 100);
-                
+
                 // Auto remove
                 setTimeout(() => {
                     toast.classList.add('translate-x-full', 'opacity-0');
@@ -1109,11 +1154,12 @@
                     }, 300);
                 }, 4000);
             }
-            
+
             // Initialize with current date
             document.getElementById('current-year').textContent = currentYear;
             updateMonthTitle();
         });
     </script>
 </body>
+
 </html>

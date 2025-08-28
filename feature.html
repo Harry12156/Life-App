@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Life - Sticky Notes</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #f8f4f4;
+        }
+        
+        .font-handwriting {
+            font-family: 'Kalam', cursive;
+        }
+        
+        .sticky-note {
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            background: linear-gradient(135deg, #fef3c7 0%, #fde047 100%);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        
+        .sticky-note:hover {
+            transform: rotate(0deg) !important;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            z-index: 10;
+        }
+        
+        .sticky-note.editing {
+            transform: rotate(0deg) !important;
+            z-index: 20;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .sticky-note textarea {
+            background: transparent;
+            border: none;
+            outline: none;
+            resize: none;
+            width: 100%;
+            height: 100%;
+            padding: 12px;
+            font-family: 'Kalam', cursive;
+            font-size: 14px;
+            color: #4a3c3c;
+            line-height: 1.4;
+        }
+        
+        .sticky-note textarea::placeholder {
+            color: #7a5a5a;
+            opacity: 0.6;
+        }
+        
+        .note-controls {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+        
+        .sticky-note:hover .note-controls {
+            opacity: 1;
+        }
+        
+        .add-note-btn {
+            background: linear-gradient(135deg, #7a9a7a 0%, #6a8a6a 100%);
+            border: 2px dashed #7a9a7a;
+            transition: all 0.3s ease;
+        }
+        
+        .add-note-btn:hover {
+            background: linear-gradient(135deg, #6a8a6a 0%, #5a7a5a 100%);
+            transform: scale(1.02);
+        }
+        
+        .feature-item {
+            transition: all 0.3s ease;
+            color: #7a5a5a;
+        }
+        
+        .feature-item:hover {
+            transform: translateY(-3px);
+            color: #a87f7f;
+        }
+        
+        .feature-item.active {
+            color: #7a9a7a;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(1deg); }
+            50% { transform: translateY(-5px) rotate(-1deg); }
+        }
+        
+        .animate-float {
+            animation: float 4s ease-in-out infinite;
+        }
+        
+        .modal {
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        
+        .note-colors {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-top: 12px;
+        }
+        
+        .color-option {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s ease;
+        }
+        
+        .color-option:hover,
+        .color-option.selected {
+            border-color: #7a5a5a;
+            transform: scale(1.1);
+        }
+        
+        .loading-spinner {
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #7a9a7a;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .error-message {
+            background-color: #fecaca;
+            border: 1px solid #f87171;
+            color: #dc2626;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 16px 0;
+            text-align: center;
+        }
+        
+        .success-message {
+            background-color: #d1fae5;
+            border: 1px solid #6ee7b7;
+            color: #059669;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 16px 0;
+            text-align: center;
+        }
+        
+        .date-header {
+            background: linear-gradient(135deg, #7a9a7a 0%, #a87f7f 100%);
+            color: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            margin: 24px 0 16px 0;
+            text-align: center;
+            font-weight: 600;
+            font-size: 18px;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .date-section {
+            margin-bottom: 32px;
+        }
+        
+        .logo-image {
+            width: 56px;
+            height: 44px;
+            object-fit: contain;
+        }
+        
+        .logo-footer {
+            width: 70x;
+            height: 70px;
+            object-fit: contain;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+    <!-- Firebase Configuration -->
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCEd9VlKaoSQo6ICHNncEiOcKkB0rmW9as",
+            authDomain: "life-99481.firebaseapp.com",
+            projectId: "life-99481",
+            storageBucket: "life-99481.appspot.com",
+            messagingSenderId: "474511342704",
+            appId: "1:474511342704:web:a6eacccdff394a903988b5",
+            measurementId: "G-883YJPY2VJ"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        
+        // Enable offline persistence
+        db.enablePersistence().catch((err) => {
+            if (err.code == 'failed-precondition') {
+                console.log('Multiple tabs open, persistence can only be enabled in one tab at a time.');
+            } else if (err.code == 'unimplemented') {
+                console.log('The current browser does not support all of the features required to enable persistence');
+            }
+        });
+    </script>
+
+    <!-- Header -->
+    <header class="flex items-center justify-between px-6 py-4 bg-white shadow-sm">
+        <div class="flex items-center space-x-3">
+            <div class="-to-br from-[#7a9a7a] to-[#a87f7f] rounded-lg flex items-center justify-center">
+                <i class="fas fa-sticky-note text-white text-xl"></i>
+            </div>
+            <!-- Logo placeholder - replace src with your actual logo -->
+            <img src="/imeges/Life Logo.png" alt="Life Logo" class="logo-image">
+        </div>
+        <nav class="hidden md:flex space-x-6 text-xs text-[#7a5a5a] font-semibold tracking-wide">
+            <a class="hover:text-[#a87f7f] transition-colors" href="index.html">HOME</a>
+            <a class="hover:text-[#a87f7f] transition-colors" href="about.html">ABOUT</a>
+            <a class="hover:text-[#a87f7f] transition-colors active" href="features.html">FEATURES</a>
+            <a class="hover:text-[#a87f7f] transition-colors" href="#">HELP</a>
+            <a class="hover:text-[#a87f7f] transition-colors" href="#">REVIEWS</a>
+        </nav>
+        <div class="flex items-center space-x-3" id="auth-buttons">
+            <button id="login-btn" class="text-xs font-semibold text-[#7a5a5a] hover:text-[#a87f7f] transition-colors">LOGIN</button>
+            <button id="signup-btn" class="bg-[#7a9a7a] text-white text-xs font-semibold px-3 py-1 rounded hover:bg-[#6a8a6a] transition-colors">SIGN UP</button>
+        </div>
+        <div class="hidden items-center space-x-3" id="user-profile">
+            <span id="user-name" class="text-xs font-semibold text-[#7a5a5a]"></span>
+            <button id="logout-btn" class="bg-[#d94e4e] text-white text-xs font-semibold px-3 py-1 rounded hover:bg-[#c93e3e] transition-colors">LOGOUT</button>
+        </div>
+    </header>
+
+    <!-- Features Navigation -->
+    <section class="flex justify-between max-w-2xl mx-auto mt-6 bg-white rounded-xl px-8 py-4 shadow-sm">
+        <a href="features.html" class="feature-item active text-center px-2">
+            <i class="fas fa-sticky-note text-2xl block mx-auto"></i>
+            <span class="text-xs font-semibold mt-1">Sticky Notes</span>
+        </a>
+        <a href="calendar.html" class="feature-item text-center px-2">
+            <i class="fas fa-calendar-alt text-2xl block mx-auto"></i>
+            <span class="text-xs font-semibold mt-1">Calendar</span>
+        </a>
+        <a href="reminders.html" class="feature-item text-center px-2">
+            <i class="fas fa-bell text-2xl block mx-auto"></i>
+            <span class="text-xs font-semibold mt-1">Reminders</span>
+        </a>
+        <a href="Todo.html" class="feature-item text-center px-2">
+            <i class="fas fa-check-square text-2xl block mx-auto"></i>
+            <span class="text-xs font-semibold mt-1">To-Do</span>
+        </a>
+    </section>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1">
+        <!-- Title Section -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-[#4a3c3c] mb-4 tracking-wider">Sticky Notes</h1>
+            <p class="text-[#7a5a5a] max-w-2xl mx-auto leading-relaxed">
+                Organize your thoughts and ideas with our intuitive sticky notes application. 
+                Keep track of your daily tasks, reminders, and important information all in one place.
+            </p>
+        </div>
+
+        <!-- Error/Success Messages -->
+        <div id="message-container"></div>
+
+        <!-- Controls -->
+        <div class="flex justify-center items-center mb-8">
+            <div class="flex items-center space-x-4">
+                <div id="loading-indicator" class="loading-spinner hidden"></div>
+                <button id="clear-all-btn" class="text-xs font-semibold text-[#d94e4e] hover:text-[#c93e3e] transition-colors hidden">
+                    <i class="fas fa-trash mr-1"></i>Clear All
+                </button>
+                <button id="add-note-btn" class="bg-[#7a9a7a] text-white text-xs font-semibold px-4 py-2 rounded hover:bg-[#6a8a6a] transition-colors flex items-center space-x-2">
+                    <i class="fas fa-plus"></i>
+                    <span>Add Note</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Notes by Date -->
+        <div id="notes-by-date-container">
+            <!-- Date sections will be dynamically generated here -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="empty-state" class="text-center py-16 hidden">
+            <div class="animate-float mb-6">
+                <div class="w-32 h-32 mx-auto bg-gradient-to-br from-[#fef3c7] to-[#fde047] rounded-lg shadow-lg flex items-center justify-center" style="transform: rotate(5deg);">
+                    <i class="fas fa-sticky-note text-4xl text-[#7a5a5a]"></i>
+                </div>
+            </div>
+            <h3 class="text-xl font-semibold text-[#4a3c3c] mb-2">No notes yet</h3>
+            <p class="text-[#7a5a5a] mb-6">Create your first sticky note to get started!</p>
+            <button id="create-first-note" class="bg-[#7a9a7a] text-white font-semibold px-6 py-3 rounded-lg hover:bg-[#6a8a6a] transition-colors">
+                <i class="fas fa-plus mr-2"></i>Create First Note
+            </button>
+        </div>
+    </main>
+
+    <!-- Note Modal -->
+    <div id="note-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 modal opacity-0 invisible">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold text-[#4a3c3c]" id="modal-title">Create New Note</h3>
+                <button id="close-modal" class="text-[#7a5a5a] hover:text-[#a87f7f] text-lg">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="note-form">
+                <input type="hidden" id="note-id">
+                <div class="mb-4">
+                    <label for="note-content" class="block text-sm font-medium text-[#4a3c3c] mb-2">Note Content</label>
+                    <textarea id="note-content" rows="6" class="w-full border border-[#e6dede] rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#7a9a7a] font-handwriting" placeholder="Write your note here..." maxlength="5000"></textarea>
+                    <div class="text-xs text-[#7a5a5a] mt-1">
+                        <span id="char-count">0</span>/5000 characters
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-[#4a3c3c] mb-2">Note Color</label>
+                    <div class="note-colors">
+                        <div class="color-option selected" data-color="yellow" style="background: linear-gradient(135deg, #fef3c7 0%, #fde047 100%);"></div>
+                        <div class="color-option" data-color="pink" style="background: linear-gradient(135deg, #fce7f3 0%, #f9a8d4 100%);"></div>
+                        <div class="color-option" data-color="blue" style="background: linear-gradient(135deg, #dbeafe 0%, #93c5fd 100%);"></div>
+                        <div class="color-option" data-color="green" style="background: linear-gradient(135deg, #d1fae5 0%, #6ee7b7 100%);"></div>
+                        <div class="color-option" data-color="purple" style="background: linear-gradient(135deg, #e9d5ff 0%, #c084fc 100%);"></div>
+                        <div class="color-option" data-color="orange" style="background: linear-gradient(135deg, #fed7aa 0%, #fb923c 100%);"></div>
+                        <div class="color-option" data-color="red" style="background: linear-gradient(135deg, #fecaca 0%, #f87171 100%);"></div>
+                        <div class="color-option" data-color="gray" style="background: linear-gradient(135deg, #f3f4f6 0%, #d1d5db 100%);"></div>
+                    </div>
+                </div>
+                <div class="flex justify-end space-x-3">
+                    <button type="button" id="cancel-note" class="px-4 py-2 text-sm font-medium text-[#7a5a5a] hover:text-[#a87f7f] transition-colors">Cancel</button>
+                    <button type="submit" id="save-note" class="px-4 py-2 bg-[#7a9a7a] text-white text-sm font-medium rounded hover:bg-[#6a8a6a] transition-colors">Save Note</button>
+                    <button type="button" id="delete-note" class="px-4 py-2 bg-[#d94e4e] text-white text-sm font-medium rounded hover:bg-[#c93e3e] transition-colors hidden">Delete</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="mt-auto bg-white border-t border-[#e6dede] py-6 px-6">
+        <div class="max-w-5xl mx-auto flex flex-col md:flex-row md:justify-between md:items-start space-y-6 md:space-y-0">
+            <div class="flex items-center space-x-3">
+                <div class="br from-[#7a9a7a] to-[#a87f7f] rounded-lg flex items-center justify-center">
+                    <i class="fas fa-sticky-note text-white text-xl"></i>
+                </div>
+                <!-- Logo placeholder - replace src with your actual logo -->
+                <img src="/imeges/Life Logo.png" alt="Life Logo" class="logo-footer">
+            </div>
+            <div class="flex flex-col md:flex-row md:space-x-12 text-xs text-[#7a5a5a] font-semibold select-none">
+                <div>
+                    <p class="mb-2">Quick Links</p>
+                    <ul class="space-y-1">
+                        <li><a class="hover:text-[#a87f7f] transition-colors" href="index.html">Home</a></li>
+                        <li><a class="hover:text-[#a87f7f] transition-colors" href="about.html">About Us</a></li>
+                        <li><a class="hover:text-[#a87f7f] transition-colors" href="features.html">Features</a></li>
+                        <li><a class="hover:text-[#a87f7f] transition-colors" href="#">Help</a></li>
+                        <li><a class="hover:text-[#a87f7f] transition-colors" href="#">Reviews</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <p class="mb-2">Info</p>
+                    <ul class="space-y-1">
+                        <li><a class="hover:text-[#a87f7f] transition-colors" href="#">How we work</a></li>
+                        <li><a class="hover:text-[#a87f7f] transition-colors" href="#">Terms of Service</a></li>
+                        <li><a class="hover:text-[#a87f7f] transition-colors" href="#">FAQ</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <p class="mb-2">Connect With Us</p>
+                    <ul class="flex space-x-4 text-lg text-[#7a5a5a]">
+                        <li><a aria-label="Facebook" class="hover:text-[#a87f7f] transition-colors" href="#"><i class="fab fa-facebook-f"></i></a></li>
+                        <li><a aria-label="Twitter" class="hover:text-[#a87f7f] transition-colors" href="#"><i class="fab fa-twitter"></i></a></li>
+                        <li><a aria-label="Instagram" class="hover:text-[#a87f7f] transition-colors" href="#"><i class="fab fa-instagram"></i></a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="max-w-5xl mx-auto mt-6 pt-4 border-t border-[#e6dede] flex flex-col md:flex-row justify-between items-center">
+            <p class="text-center text-[10px] text-[#7a5a5a] select-none">© 2025 Life. All rights reserved. Website by <a href="#" class="hover:text-[#a87f7f]">RavinduPereraKumara</a></p>
+            <div class="flex space-x-4 mt-2 md:mt-0">
+                <a href="#" class="text-[10px] text-[#7a5a5a] hover:text-[#a87f7f] transition-colors">Terms of Service</a>
+                <a href="#" class="text-[10px] text-[#7a5a5a] hover:text-[#a87f7f] transition-colors">Privacy Policy</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Firebase references
+            const auth = firebase.auth();
+            const db = firebase.firestore();
+            
+            // State variables
+            let currentUser = null;
+            let notes = [];
+            let selectedColor = 'yellow';
+            let isLoading = false;
+            
+            // DOM elements
+            const authButtons = document.getElementById('auth-buttons');
+            const userProfile = document.getElementById('user-profile');
+            const userName = document.getElementById('user-name');
+            const loginBtn = document.getElementById('login-btn');
+            const signupBtn = document.getElementById('signup-btn');
+            const logoutBtn = document.getElementById('logout-btn');
+            const notesByDateContainer = document.getElementById('notes-by-date-container');
+            const emptyState = document.getElementById('empty-state');
+            const addNoteBtn = document.getElementById('add-note-btn');
+            const createFirstNote = document.getElementById('create-first-note');
+            const clearAllBtn = document.getElementById('clear-all-btn');
+            const noteModal = document.getElementById('note-modal');
+            const closeModal = document.getElementById('close-modal');
+            const cancelNote = document.getElementById('cancel-note');
+            const noteForm = document.getElementById('note-form');
+            const noteContent = document.getElementById('note-content');
+            const noteId = document.getElementById('note-id');
+            const saveNote = document.getElementById('save-note');
+            const deleteNote = document.getElementById('delete-note');
+            const modalTitle = document.getElementById('modal-title');
+            const colorOptions = document.querySelectorAll('.color-option');
+            const loadingIndicator = document.getElementById('loading-indicator');
+            const messageContainer = document.getElementById('message-container');
+            const charCount = document.getElementById('char-count');
+            
+            // Color schemes
+            const colorSchemes = {
+                yellow: 'linear-gradient(135deg, #fef3c7 0%, #fde047 100%)',
+                pink: 'linear-gradient(135deg, #fce7f3 0%, #f9a8d4 100%)',
+                blue: 'linear-gradient(135deg, #dbeafe 0%, #93c5fd 100%)',
+                green: 'linear-gradient(135deg, #d1fae5 0%, #6ee7b7 100%)',
+                purple: 'linear-gradient(135deg, #e9d5ff 0%, #c084fc 100%)',
+                orange: 'linear-gradient(135deg, #fed7aa 0%, #fb923c 100%)',
+                red: 'linear-gradient(135deg, #fecaca 0%, #f87171 100%)',
+                gray: 'linear-gradient(135deg, #f3f4f6 0%, #d1d5db 100%)'
+            };
+            
+            // Utility functions
+            function showMessage(message, type = 'error') {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = type === 'error' ? 'error-message' : 'success-message';
+                messageDiv.textContent = message;
+                messageContainer.appendChild(messageDiv);
+                
+                setTimeout(() => {
+                    messageDiv.remove();
+                }, 5000);
+            }
+            
+            function showLoading(show = true) {
+                isLoading = show;
+                if (show) {
+                    loadingIndicator.classList.remove('hidden');
+                } else {
+                    loadingIndicator.classList.add('hidden');
+                }
+            }
+            
+            function escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+            
+            // Get date key for grouping notes
+            function getDateKey(timestamp) {
+                if (!timestamp) return getTodayKey();
+                
+                const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+                return date.toDateString();
+            }
+            
+            function getTodayKey() {
+                return new Date().toDateString();
+            }
+            
+            function getYesterdayKey() {
+                const yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+                return yesterday.toDateString();
+            }
+            
+            function getTomorrowKey() {
+                const tomorrow = new Date();
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                return tomorrow.toDateString();
+            }
+            
+            // Format date header
+            function formatDateHeader(dateKey) {
+                const today = getTodayKey();
+                const yesterday = getYesterdayKey();
+                const tomorrow = getTomorrowKey();
+                
+                if (dateKey === today) {
+                    return 'Today';
+                } else if (dateKey === yesterday) {
+                    return 'Yesterday';
+                } else if (dateKey === tomorrow) {
+                    return 'Tomorrow';
+                } else {
+                    const date = new Date(dateKey);
+                    return date.toLocaleDateString('en-GB', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric'
+                    });
+                }
+            }
+            
+            // Character counter
+            noteContent.addEventListener('input', () => {
+                const count = noteContent.value.length;
+                charCount.textContent = count;
+                if (count > 4500) {
+                    charCount.style.color = '#d94e4e';
+                } else {
+                    charCount.style.color = '#7a5a5a';
+                }
+            });
+            
+            // Auth state listener
+            auth.onAuthStateChanged(user => {
+                if (user) {
+                    currentUser = user;
+                    authButtons.classList.add('hidden');
+                    userProfile.classList.remove('hidden');
+                    userName.textContent = user.displayName || user.email.split('@')[0];
+                    loadNotes();
+                } else {
+                    currentUser = null;
+                    authButtons.classList.remove('hidden');
+                    userProfile.classList.add('hidden');
+                    notes = [];
+                    renderNotesByDate();
+                }
+            });
+            
+            // Auth button handlers
+            loginBtn.addEventListener('click', () => {
+                const email = prompt('Enter email:');
+                const password = prompt('Enter password:');
+                if (email && password) {
+                    auth.signInWithEmailAndPassword(email, password)
+                        .catch(error => showMessage('Login failed: ' + error.message));
+                }
+            });
+            
+            signupBtn.addEventListener('click', () => {
+                const email = prompt('Enter email:');
+                const password = prompt('Enter password:');
+                if (email && password) {
+                    auth.createUserWithEmailAndPassword(email, password)
+                        .catch(error => showMessage('Signup failed: ' + error.message));
+                }
+            });
+            
+            logoutBtn.addEventListener('click', () => {
+                auth.signOut().catch(error => showMessage('Logout failed: ' + error.message));
+            });
+            
+            // Note creation handlers
+            addNoteBtn.addEventListener('click', openCreateNoteModal);
+            createFirstNote.addEventListener('click', openCreateNoteModal);
+            
+            // Modal handlers
+            closeModal.addEventListener('click', closeNoteModal);
+            cancelNote.addEventListener('click', closeNoteModal);
+            
+            // Close modal on outside click
+            noteModal.addEventListener('click', (e) => {
+                if (e.target === noteModal) {
+                    closeNoteModal();
+                }
+            });
+            
+            // Color selection
+            colorOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    colorOptions.forEach(opt => opt.classList.remove('selected'));
+                    option.classList.add('selected');
+                    selectedColor = option.dataset.color;
+                });
+            });
+            
+            // Clear all notes
+            clearAllBtn.addEventListener('click', async () => {
+                if (confirm('Are you sure you want to delete all notes? This action cannot be undone.')) {
+                    showLoading(true);
+                    try {
+                        const snapshot = await db.collection('notes')
+                            .where('userId', '==', currentUser.uid)
+                            .get();
+                        
+                        if (snapshot.empty) {
+                            showMessage('No notes to delete.', 'success');
+                            showLoading(false);
+                            return;
+                        }
+                        
+                        const batchSize = 500;
+                        const batches = [];
+                        let currentBatch = db.batch();
+                        let operationCount = 0;
+                        
+                        snapshot.forEach(doc => {
+                            currentBatch.delete(doc.ref);
+                            operationCount++;
+                            
+                            if (operationCount === batchSize) {
+                                batches.push(currentBatch);
+                                currentBatch = db.batch();
+                                operationCount = 0;
+                            }
+                        });
+                        
+                        if (operationCount > 0) {
+                            batches.push(currentBatch);
+                        }
+                        
+                        await Promise.all(batches.map(batch => batch.commit()));
+                        showMessage('All notes deleted successfully.', 'success');
+                        loadNotes();
+                    } catch (error) {
+                        console.error('Error deleting notes:', error);
+                        showMessage('Error deleting notes. Please try again.');
+                    } finally {
+                        showLoading(false);
+                    }
+                }
+            });
+            
+            // Note form submission
+            noteForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const content = noteContent.value.trim();
+                if (!content) {
+                    showMessage('Please enter some content for your note');
+                    return;
+                }
+                
+                if (!currentUser) {
+                    showMessage('Please log in to save notes');
+                    return;
+                }
+                
+                if (content.length > 5000) {
+                    showMessage('Note content is too long. Maximum 5000 characters allowed.');
+                    return;
+                }
+                
+                saveNote.disabled = true;
+                saveNote.innerHTML = '<div class="loading-spinner"></div> Saving...';
+                
+                const noteData = {
+                    content: content,
+                    color: selectedColor,
+                    userId: currentUser.uid,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+                
+                if (!noteId.value) {
+                    noteData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                }
+                
+                try {
+                    if (noteId.value) {
+                        await db.collection('notes').doc(noteId.value).update(noteData);
+                        showMessage('Note updated successfully!', 'success');
+                    } else {
+                        await db.collection('notes').add(noteData);
+                        showMessage('Note created successfully!', 'success');
+                    }
+                    
+                    closeNoteModal();
+                    loadNotes();
+                } catch (error) {
+                    console.error('Error saving note:', error);
+                    
+                    if (error.code === 'permission-denied') {
+                        showMessage('Permission denied. Please make sure you are logged in.');
+                    } else if (error.code === 'not-found') {
+                        showMessage('Note not found. It may have been deleted.');
+                    } else {
+                        showMessage('Error saving note. Please try again.');
+                    }
+                } finally {
+                    saveNote.disabled = false;
+                    saveNote.innerHTML = 'Save Note';
+                }
+            });
+            
+            // Delete note
+            deleteNote.addEventListener('click', async () => {
+                if (confirm('Are you sure you want to delete this note?')) {
+                    try {
+                        await db.collection('notes').doc(noteId.value).delete();
+                        showMessage('Note deleted successfully!', 'success');
+                        closeNoteModal();
+                        loadNotes();
+                    } catch (error) {
+                        console.error('Error deleting note:', error);
+                        
+                        if (error.code === 'permission-denied') {
+                            showMessage('Permission denied. Please make sure you are logged in.');
+                        } else if (error.code === 'not-found') {
+                            showMessage('Note not found. It may have already been deleted.');
+                        } else {
+                            showMessage('Error deleting note. Please try again.');
+                        }
+                    }
+                }
+            });
+            
+            // Load notes from Firestore
+            async function loadNotes() {
+                if (!currentUser) {
+                    notes = [];
+                    renderNotesByDate();
+                    return;
+                }
+                
+                showLoading(true);
+                try {
+                    const snapshot = await db.collection('notes')
+                        .where('userId', '==', currentUser.uid)
+                        .get();
+                    
+                    notes = [];
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
+                        notes.push({
+                            id: doc.id,
+                            content: data.content || '',
+                            color: data.color || 'yellow',
+                            userId: data.userId,
+                            createdAt: data.createdAt,
+                            updatedAt: data.updatedAt || data.createdAt
+                        });
+                    });
+                    
+                    // Sort notes by updatedAt
+                    notes.sort((a, b) => {
+                        const aTime = a.updatedAt ? (a.updatedAt.toDate ? a.updatedAt.toDate() : new Date(a.updatedAt)) : new Date(0);
+                        const bTime = b.updatedAt ? (b.updatedAt.toDate ? b.updatedAt.toDate() : new Date(b.updatedAt)) : new Date(0);
+                        return bTime - aTime;
+                    });
+                    
+                    renderNotesByDate();
+                } catch (error) {
+                    console.error('Error loading notes:', error);
+                    
+                    if (error.code === 'failed-precondition') {
+                        showMessage('Setting up database indexes. Please wait a moment and try again.');
+                    } else if (error.code === 'permission-denied') {
+                        showMessage('Permission denied. Please make sure you are logged in.');
+                    } else if (error.code === 'unavailable') {
+                        showMessage('Database temporarily unavailable. Please check your internet connection.');
+                    } else {
+                        showMessage('Error loading notes. Please check your internet connection and try again.');
+                    }
+                    
+                    notes = [];
+                    renderNotesByDate();
+                } finally {
+                    showLoading(false);
+                }
+            }
+            
+            // Render notes grouped by date
+            function renderNotesByDate() {
+                if (notes.length === 0) {
+                    notesByDateContainer.classList.add('hidden');
+                    emptyState.classList.remove('hidden');
+                    clearAllBtn.classList.add('hidden');
+                    return;
+                }
+                
+                notesByDateContainer.classList.remove('hidden');
+                emptyState.classList.add('hidden');
+                clearAllBtn.classList.remove('hidden');
+                
+                // Group notes by date
+                const notesByDate = {};
+                notes.forEach(note => {
+                    const dateKey = getDateKey(note.updatedAt);
+                    if (!notesByDate[dateKey]) {
+                        notesByDate[dateKey] = [];
+                    }
+                    notesByDate[dateKey].push(note);
+                });
+                
+                // Sort date keys (Today, Yesterday, Tomorrow, then chronological)
+                const sortedDateKeys = Object.keys(notesByDate).sort((a, b) => {
+                    const today = getTodayKey();
+                    const yesterday = getYesterdayKey();
+                    const tomorrow = getTomorrowKey();
+                    
+                    if (a === today) return -1;
+                    if (b === today) return 1;
+                    if (a === yesterday) return -1;
+                    if (b === yesterday) return 1;
+                    if (a === tomorrow) return -1;
+                    if (b === tomorrow) return 1;
+                    
+                    return new Date(b) - new Date(a);
+                });
+                
+                notesByDateContainer.innerHTML = '';
+                
+                sortedDateKeys.forEach(dateKey => {
+                    const dateSection = document.createElement('div');
+                    dateSection.className = 'date-section';
+                    
+                    // Date header
+                    const dateHeader = document.createElement('div');
+                    dateHeader.className = 'date-header';
+                    dateHeader.textContent = formatDateHeader(dateKey);
+                    dateSection.appendChild(dateHeader);
+                    
+                    // Notes grid for this date
+                    const notesGrid = document.createElement('div');
+                    notesGrid.className = 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6';
+                    
+                    notesByDate[dateKey].forEach((note, index) => {
+                        const noteElement = createNoteElement(note, index);
+                        notesGrid.appendChild(noteElement);
+                    });
+                    
+                    dateSection.appendChild(notesGrid);
+                    notesByDateContainer.appendChild(dateSection);
+                });
+            }
+            
+            // Create a note element
+            function createNoteElement(note, index) {
+                const noteDiv = document.createElement('div');
+                noteDiv.className = 'relative';
+                
+                const rotations = [2, -1, 1, -2, 3, -3, 1, -1, 2, -2];
+                const rotation = rotations[index % rotations.length];
+                
+                const noteContent = escapeHtml(note.content || 'Empty note');
+                const noteColor = note.color || 'yellow';
+                const noteId = note.id || '';
+                
+                noteDiv.innerHTML = `
+                    <div class="sticky-note w-full h-48 rounded-lg p-4 relative" 
+                         style="transform: rotate(${rotation}deg); background: ${colorSchemes[noteColor] || colorSchemes.yellow};">
+                        <div class="note-controls">
+                            <button class="edit-note bg-white text-[#7a5a5a] hover:text-[#7a9a7a] w-6 h-6 rounded-full shadow-md flex items-center justify-center text-xs mr-1" data-id="${noteId}" title="Edit note">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="delete-note bg-white text-[#d94e4e] hover:text-[#c93e3e] w-6 h-6 rounded-full shadow-md flex items-center justify-center text-xs" data-id="${noteId}" title="Delete note">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                        <div class="absolute top-2 left-2">
+                            <i class="fas fa-thumbtack text-[#7a5a5a] text-sm"></i>
+                        </div>
+                        <div class="mt-6 h-32 overflow-hidden">
+                            <p class="font-handwriting text-sm text-[#4a3c3c] leading-relaxed">${noteContent}</p>
+                        </div>
+                        <div class="absolute bottom-2 right-2 text-xs text-[#7a5a5a] opacity-60">
+                            ${formatTime(note.updatedAt)}
+                        </div>
+                    </div>
+                `;
+                
+                // Add event listeners
+                const editBtn = noteDiv.querySelector('.edit-note');
+                const deleteBtn = noteDiv.querySelector('.delete-note');
+                const stickyNote = noteDiv.querySelector('.sticky-note');
+                
+                if (editBtn) {
+                    editBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        openEditNoteModal(note);
+                    });
+                }
+                
+                if (deleteBtn) {
+                    deleteBtn.addEventListener('click', async (e) => {
+                        e.stopPropagation();
+                        if (confirm('Are you sure you want to delete this note?')) {
+                            try {
+                                await db.collection('notes').doc(note.id).delete();
+                                showMessage('Note deleted successfully!', 'success');
+                                loadNotes();
+                            } catch (error) {
+                                console.error('Error deleting note:', error);
+                                showMessage('Error deleting note. Please try again.');
+                            }
+                        }
+                    });
+                }
+                
+                if (stickyNote) {
+                    stickyNote.addEventListener('click', () => {
+                        openEditNoteModal(note);
+                    });
+                }
+                
+                return noteDiv;
+            }
+            
+            // Open create note modal
+            function openCreateNoteModal() {
+                if (!currentUser) {
+                    showMessage('Please log in to create notes');
+                    return;
+                }
+                
+                noteForm.reset();
+                noteId.value = '';
+                selectedColor = 'yellow';
+                charCount.textContent = '0';
+                charCount.style.color = '#7a5a5a';
+                
+                colorOptions.forEach(opt => opt.classList.remove('selected'));
+                colorOptions[0].classList.add('selected');
+                modalTitle.textContent = 'Create New Note';
+                deleteNote.classList.add('hidden');
+                
+                noteModal.classList.remove('invisible', 'opacity-0');
+                noteModal.classList.add('opacity-100');
+                
+                setTimeout(() => noteContent.focus(), 100);
+            }
+            
+            // Open edit note modal
+            function openEditNoteModal(note) {
+                if (!currentUser) {
+                    showMessage('Please log in to edit notes');
+                    return;
+                }
+                
+                noteId.value = note.id;
+                noteContent.value = note.content;
+                selectedColor = note.color;
+                charCount.textContent = note.content.length;
+                
+                colorOptions.forEach(opt => opt.classList.remove('selected'));
+                const selectedOption = document.querySelector(`[data-color="${note.color}"]`);
+                if (selectedOption) {
+                    selectedOption.classList.add('selected');
+                }
+                
+                modalTitle.textContent = 'Edit Note';
+                deleteNote.classList.remove('hidden');
+                
+                noteModal.classList.remove('invisible', 'opacity-0');
+                noteModal.classList.add('opacity-100');
+                
+                setTimeout(() => noteContent.focus(), 100);
+            }
+            
+            // Close note modal
+            function closeNoteModal() {
+                noteModal.classList.remove('opacity-100');
+                noteModal.classList.add('opacity-0', 'invisible');
+            }
+            
+            // Format time for note display
+            function formatTime(timestamp) {
+                if (!timestamp) return 'Just now';
+                
+                try {
+                    const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+                    return date.toLocaleTimeString('en-US', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: true
+                    });
+                } catch (error) {
+                    console.error('Error formatting time:', error);
+                    return 'Recently';
+                }
+            }
+            
+            // Keyboard shortcuts
+            document.addEventListener('keydown', (e) => {
+                if ((e.ctrlKey || e.metaKey) && e.key === 'n' && !noteModal.classList.contains('opacity-100')) {
+                    e.preventDefault();
+                    openCreateNoteModal();
+                }
+                
+                if (e.key === 'Escape' && noteModal.classList.contains('opacity-100')) {
+                    closeNoteModal();
+                }
+            });
+            
+            // Initialize the app
+            renderNotesByDate();
+        });
+    </script>
+</body>
+</html>

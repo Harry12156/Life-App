@@ -10,14 +10,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-    <link rel="icon" type="image/png" href="./imeges/Life Logo.png">
-    <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#A94EBD">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="Life">
-    <link rel="apple-touch-icon" href="/imeges/Life Logo.png">
-    <meta name="description" content="Learn about Life - Your beautiful reminder and task management app">
     <link
         href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Kalam:wght@400;700&display=swap"
         rel="stylesheet">
@@ -233,9 +225,9 @@
                 <a class="hover:text-[#a87f7f] transition-colors" href="index.html">HOME</a>
                 <a class="hover:text-[#a87f7f] transition-colors" href="about.html">ABOUT</a>
                 <a class="hover:text-[#a87f7f] transition-colors active" href="features.html">FEATURES</a>
-           
+                <a class="hover:text-[#a87f7f] transition-colors" href="Todo.html">TODO LIST</a>
                 <a class="hover:text-[#a87f7f] transition-colors" href="#">HELP</a>
-                <a class="hover:text-[#a87f7f] transition-colors" href="review.html">REVIEWS</a>
+                <a class="hover:text-[#a87f7f] transition-colors" href="#">REVIEWS</a>
             </nav>
 
             <div class="flex items-center space-x-3" id="auth-buttons">
@@ -268,9 +260,9 @@
             <a class="hover:text-[#a87f7f] transition-colors" href="index.html">HOME</a>
             <a class="hover:text-[#a87f7f] transition-colors" href="about.html">ABOUT</a>
             <a class="hover:text-[#a87f7f] transition-colors active" href="features.html">FEATURES</a>
-   
+            <a class="hover:text-[#a87f7f] transition-colors" href="Todo.html">TODO LIST</a>
             <a class="hover:text-[#a87f7f] transition-colors" href="#">HELP</a>
-            <a class="hover:text-[#a87f7f] transition-colors" href="review.html">REVIEWS</a>
+            <a class="hover:text-[#a87f7f] transition-colors" href="#">REVIEWS</a>
         </div>
     </nav>
 
@@ -656,7 +648,6 @@
             const authButtons = document.getElementById('auth-buttons');
             const userProfile = document.getElementById('user-profile');
             const userName = document.getElementById('user-name');
-            const loginBtn = document.getElementById('login-btn');
             const signupBtn = document.getElementById('signup-btn');
             const logoutBtn = document.getElementById('logout-btn');
             const addTaskBtn = document.getElementById('add-task-btn');
@@ -869,11 +860,6 @@
                     }
                 });
             }
-
-            // Set Firebase Auth persistence to LOCAL
-            auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(function(error) {
-                console.error('Error setting auth persistence:', error);
-            });
             
             // Authentication functions
             function handleLogin() {
@@ -1334,7 +1320,7 @@
             // Initialize with current date
             updateDateDisplays();
         });
-    </script>
+    </script> 
 </body>
 
 </html>
