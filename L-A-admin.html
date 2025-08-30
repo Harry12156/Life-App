@@ -9,8 +9,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-    <link rel="icon" type="image/png" href="./imeges/Life Logo.png">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
@@ -255,915 +253,811 @@
             border-radius: 16px;
             padding: 24px;
         }
-
-        /* Added styles for analytics section */
-        .analytics-section {
-            display: none;
-        }
-        
-        .analytics-section.active {
-            display: block;
-        }
-        
-        .chart-wrapper {
-            position: relative;
-            height: 300px;
-        }
-        
-        .chart-title {
-            font-size: 1.125rem;
-            font-weight: 600;
-            color: #4B2E5E;
-            margin-bottom: 1rem;
-            text-align: center;
-        }
     </style>
 </head>
 <body>
-    <!-- Mobile Menu -->
+
+    <script>
+        const firebaseConfig = {
+  apiKey: "AIzaSyBi4feeVAPUJJXe9qUV7j-SutsGFRnZBjo",
+  authDomain: "lifeappcy.firebaseapp.com",
+  projectId: "lifeappcy",
+  storageBucket: "lifeappcy.firebasestorage.app",
+  messagingSenderId: "598700486958",
+  appId: "1:598700486958:web:307187bca0966041e84abf",
+  measurementId: "G-57C80GJLZD"
+};
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+    </script>
+
+
+    <header class="glass mx-4 mt-4 rounded-2xl px-6 py-4 shadow-lg">
+        <div class="flex items-center justify-between max-w-7xl mx-auto">
+            <div class="flex items-center space-x-3">
+                <div class="-to-r from-[#A94EBD] to-[#4B2E5E] rounded-xl flex items-center justify-center p-2">
+                    <img src="/imeges/Life Logo.png" alt="Life Logo" class="w-14 h-12 object-contain">
+                </div>
+                <div>
+                    <span class="font-bold text-[#4B2E5E] text-2xl">Life Admin</span>
+                    <p class="text-xs text-[#4B2E5E] opacity-70">User Management Dashboard</p>
+                </div>
+            </div>
+            
+
+            <nav class="hidden md:flex space-x-6 text-xs text-[#7a5a5a] font-semibold tracking-wide">
+                <a class="hover:text-[#a87f7f] transition-colors active" href="#dashboard">DASHBOARD</a>
+                <a class="hover:text-[#a87f7f] transition-colors" href="#users">USERS</a>
+                <a class="hover:text-[#a87f7f] transition-colors" href="#analytics">ANALYTICS</a>
+                <a class="hover:text-[#a87f7f] transition-colors" href="#settings">SETTINGS</a>
+            </nav>
+            
+
+            <div class="hidden md:flex items-center space-x-3" id="admin-profile">
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-user-shield text-[#4B2E5E] text-xl"></i>
+                    <span id="admin-name" class="text-sm font-semibold text-[#4B2E5E]">Admin</span>
+                </div>
+                <button id="admin-logout-btn" class="bg-red-500 text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-red-600 transition-colors">LOGOUT</button>
+            </div>
+            
+
+            <button id="mobile-menu-button" class="mobile-menu-button md:hidden">
+                <i class="fas fa-bars text-xl"></i>
+            </button>
+        </div>
+    </header>
+
+
     <div id="mobile-menu" class="mobile-menu">
-        <div class="mobile-menu-content">
+        <div class="mobile-menu-content glass">
             <div class="mobile-menu-header">
-                <h3 class="text-lg font-bold text-[#4B2E5E]">Admin Menu</h3>
+                <h3 class="text-xl font-bold text-[#4B2E5E]">Admin Menu</h3>
                 <button id="mobile-menu-close" class="mobile-menu-close">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-            <nav class="mobile-nav-links">
-                <a href="#" class="mobile-nav-link active" data-section="dashboard">
-                    <i class="fas fa-tachometer-alt"></i>Dashboard
+            
+            <div class="mobile-nav-links">
+                <a href="#dashboard" class="mobile-nav-link active">
+                    <i class="fas fa-tachometer-alt"></i>
+                    DASHBOARD
                 </a>
-                <a href="#" class="mobile-nav-link" data-section="analytics">
-                    <i class="fas fa-chart-bar"></i>Analytics
+                <a href="#users" class="mobile-nav-link">
+                    <i class="fas fa-users"></i>
+                    USERS
                 </a>
-                <!-- Added review management link to mobile menu -->
-                <a href="#" class="mobile-nav-link" data-section="reviews">
-                    <i class="fas fa-star"></i>Review Management
+                <a href="#analytics" class="mobile-nav-link">
+                    <i class="fas fa-chart-bar"></i>
+                    ANALYTICS
                 </a>
-            </nav>
+                <a href="#settings" class="mobile-nav-link">
+                    <i class="fas fa-cog"></i>
+                    SETTINGS
+                </a>
+                <button id="mobile-admin-logout" class="mobile-nav-link text-red-600">
+                    <i class="fas fa-sign-out-alt"></i>
+                    LOGOUT
+                </button>
+            </div>
         </div>
     </div>
 
-    <div class="min-h-screen p-4 md:p-8">
-        <!-- Header -->
-        <div class="glass rounded-2xl p-6 mb-8">
-            <div class="flex flex-col md:flex-row md:items-center md:justify-between">
-                <div class="flex items-center space-x-4 mb-4 md:mb-0">
-                    <div class="bg-gradient-to-br from-[#A94EBD] to-[#4B2E5E] rounded-full w-12 h-12 flex items-center justify-center">
-                        <i class="fas fa-user-shield text-white text-xl"></i>
-                    </div>
+
+    <main class="max-w-7xl mx-auto px-4 py-8">
+
+        <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+
+            <div class="stat-card rounded-2xl p-6">
+                <div class="flex items-center justify-between">
                     <div>
-                        <h1 class="text-2xl md:text-3xl font-bold text-[#4B2E5E] font-handwriting">Admin Dashboard</h1>
-                        <p class="text-[#4B2E5E] opacity-70">Manage your Life application</p>
+                        <p class="text-sm font-semibold text-[#4B2E5E] opacity-70">Total Users</p>
+                        <p class="text-3xl font-bold text-[#4B2E5E]" id="total-users">0</p>
+                    </div>
+                    <div class="bg-gradient-to-br from-[#A94EBD] to-[#4B2E5E] rounded-full p-3">
+                        <i class="fas fa-users text-white text-xl"></i>
                     </div>
                 </div>
-                
-                <div class="flex items-center space-x-4">
-                    <!-- Desktop Navigation -->
-                    <nav class="hidden md:flex space-x-2">
-                        <button class="nav-btn active" data-section="dashboard">
-                            <i class="fas fa-tachometer-alt mr-2"></i>Dashboard
-                        </button>
-                        <button class="nav-btn" data-section="analytics">
-                            <i class="fas fa-chart-bar mr-2"></i>Analytics
-                        </button>
-                        <!-- Added review management button to desktop navigation -->
-                        <button class="nav-btn" data-section="reviews">
-                            <i class="fas fa-star mr-2"></i>Reviews
-                        </button>
-                    </nav>
-                    
-                    <!-- Mobile Menu Button -->
-                    <button id="mobile-menu-button" class="mobile-menu-button md:hidden">
-                        <i class="fas fa-bars"></i>
+                <div class="mt-4 flex items-center">
+                    <span class="text-green-600 text-sm font-semibold" id="total-users-change">+0%</span>
+                    <span class="text-xs text-[#4B2E5E] opacity-70 ml-2">from last month</span>
+                </div>
+            </div>
+
+
+            <div class="stat-card rounded-2xl p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-semibold text-[#4B2E5E] opacity-70">New Users Today</p>
+                        <p class="text-3xl font-bold text-[#4B2E5E]" id="new-users-today">0</p>
+                    </div>
+                    <div class="bg-gradient-to-br from-green-400 to-green-600 rounded-full p-3">
+                        <i class="fas fa-user-plus text-white text-xl"></i>
+                    </div>
+                </div>
+                <div class="mt-4 flex items-center">
+                    <span class="text-green-600 text-sm font-semibold" id="new-users-change">+0</span>
+                    <span class="text-xs text-[#4B2E5E] opacity-70 ml-2">since yesterday</span>
+                </div>
+            </div>
+
+
+            <div class="stat-card rounded-2xl p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-semibold text-[#4B2E5E] opacity-70">Active Users</p>
+                        <p class="text-3xl font-bold text-[#4B2E5E]" id="active-users">0</p>
+                    </div>
+                    <div class="bg-gradient-to-br from-blue-400 to-blue-600 rounded-full p-3">
+                        <i class="fas fa-user-check text-white text-xl"></i>
+                    </div>
+                </div>
+                <div class="mt-4 flex items-center">
+                    <span class="text-blue-600 text-sm font-semibold" id="active-users-percentage">0%</span>
+                    <span class="text-xs text-[#4B2E5E] opacity-70 ml-2">of total users</span>
+                </div>
+            </div>
+
+
+            <div class="stat-card rounded-2xl p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-semibold text-[#4B2E5E] opacity-70">Complete Profiles</p>
+                        <p class="text-3xl font-bold text-[#4B2E5E]" id="complete-profiles">0</p>
+                    </div>
+                    <div class="bg-gradient-to-br from-orange-400 to-orange-600 rounded-full p-3">
+                        <i class="fas fa-user-edit text-white text-xl"></i>
+                    </div>
+                </div>
+                <div class="mt-4 flex items-center">
+                    <span class="text-orange-600 text-sm font-semibold" id="complete-profiles-percentage">0%</span>
+                    <span class="text-xs text-[#4B2E5E] opacity-70 ml-2">completion rate</span>
+                </div>
+            </div>
+        </section>
+
+
+        <section class="glass rounded-2xl p-6 mb-8">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
+                <h2 class="text-xl font-bold text-[#4B2E5E]">User Management</h2>
+                <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
+                    <div class="relative">
+                        <input type="text" id="search-users" placeholder="Search users..." class="search-box rounded-lg px-4 py-2 pl-10 w-full sm:w-64 outline-none">
+                        <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-[#4B2E5E] opacity-50"></i>
+                    </div>
+                    <select id="filter-status" class="search-box rounded-lg px-4 py-2 outline-none">
+                        <option value="">All Users</option>
+                        <option value="active">Active Users</option>
+                        <option value="inactive">Inactive Users</option>
+                        <option value="complete">Complete Profiles</option>
+                        <option value="incomplete">Incomplete Profiles</option>
+                    </select>
+                    <button id="refresh-data" class="bg-gradient-to-r from-[#A94EBD] to-[#4B2E5E] text-white px-4 py-2 rounded-lg hover:shadow-lg transition-all">
+                        <i class="fas fa-sync-alt mr-2"></i>Refresh
                     </button>
-                    
-                    <button onclick="auth.signOut()" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors">
-                        <i class="fas fa-sign-out-alt mr-2"></i>
-                        <span class="hidden sm:inline">Sign Out</span>
-                    </button>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <!-- Dashboard Section -->
-        <div id="dashboard-section" class="section active">
-            <!-- Statistics Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <div class="stat-card rounded-2xl p-6">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-[#4B2E5E] opacity-70 text-sm font-medium">Total Users</p>
-                            <p id="total-users" class="text-2xl font-bold text-[#4B2E5E]">0</p>
-                        </div>
-                        <div class="bg-gradient-to-br from-[#A94EBD] to-[#4B2E5E] rounded-full w-12 h-12 flex items-center justify-center">
-                            <i class="fas fa-users text-white"></i>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="stat-card rounded-2xl p-6">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-[#4B2E5E] opacity-70 text-sm font-medium">Active Users</p>
-                            <p id="active-users" class="text-2xl font-bold text-[#4B2E5E]">0</p>
-                        </div>
-                        <div class="bg-gradient-to-br from-green-400 to-green-600 rounded-full w-12 h-12 flex items-center justify-center">
-                            <i class="fas fa-user-check text-white"></i>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="stat-card rounded-2xl p-6">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-[#4B2E5E] opacity-70 text-sm font-medium">New This Month</p>
-                            <p id="new-users" class="text-2xl font-bold text-[#4B2E5E]">0</p>
-                        </div>
-                        <div class="bg-gradient-to-br from-blue-400 to-blue-600 rounded-full w-12 h-12 flex items-center justify-center">
-                            <i class="fas fa-user-plus text-white"></i>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="stat-card rounded-2xl p-6">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-[#4B2E5E] opacity-70 text-sm font-medium">Profile Complete</p>
-                            <p id="complete-profiles" class="text-2xl font-bold text-[#4B2E5E]">0</p>
-                        </div>
-                        <div class="bg-gradient-to-br from-orange-400 to-orange-600 rounded-full w-12 h-12 flex items-center justify-center">
-                            <i class="fas fa-user-edit text-white"></i>
-                        </div>
-                    </div>
-                </div>
+
+        <section class="admin-table rounded-2xl overflow-hidden mb-8">
+            <div class="table-responsive">
+                <table class="w-full">
+                    <thead class="table-header">
+                        <tr>
+                            <th class="text-left p-4 font-semibold text-[#4B2E5E]">User</th>
+                            <th class="text-left p-4 font-semibold text-[#4B2E5E] hidden md:table-cell">Email</th>
+                            <th class="text-left p-4 font-semibold text-[#4B2E5E] hidden lg:table-cell">Created</th>
+                            <th class="text-left p-4 font-semibold text-[#4B2E5E] hidden lg:table-cell">Last Login</th>
+                            <th class="text-left p-4 font-semibold text-[#4B2E5E]">Status</th>
+                            <th class="text-left p-4 font-semibold text-[#4B2E5E]">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="users-table-body">
+     
+                    </tbody>
+                </table>
             </div>
-
-            <!-- User Management -->
-            <div class="admin-table rounded-2xl overflow-hidden">
-                <div class="p-6 border-b border-white border-opacity-20">
-                    <div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
-                        <h2 class="text-xl font-bold text-[#4B2E5E]">User Management</h2>
-                        <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
-                            <input type="text" id="search-users" placeholder="Search users..." 
-                                   class="search-box rounded-lg px-4 py-2 text-[#4B2E5E] placeholder-[#4B2E5E] placeholder-opacity-50 outline-none">
-                            <button onclick="loadUsers()" class="bg-gradient-to-r from-[#A94EBD] to-[#4B2E5E] text-white px-4 py-2 rounded-lg hover:shadow-lg transition-all">
-                                <i class="fas fa-sync-alt mr-2"></i>Refresh
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Loading State -->
-                <div id="loading-state" class="p-8 text-center">
-                    <div class="loading-spinner mx-auto mb-4"></div>
-                    <p class="text-[#4B2E5E] opacity-70">Loading users...</p>
-                </div>
-                
-                <!-- Empty State -->
-                <div id="empty-state" class="p-8 text-center hidden">
-                    <i class="fas fa-users text-6xl text-[#4B2E5E] opacity-30 mb-4"></i>
-                    <h3 class="text-xl font-bold text-[#4B2E5E] mb-2">No Users Found</h3>
-                    <p class="text-[#4B2E5E] opacity-70">No users match your search criteria.</p>
-                </div>
-                
-                <!-- Users Table -->
-                <div class="table-responsive hidden">
-                    <table class="w-full">
-                        <thead class="table-header">
-                            <tr>
-                                <th class="p-4 text-left text-[#4B2E5E] font-semibold">User</th>
-                                <th class="p-4 text-left text-[#4B2E5E] font-semibold hidden md:table-cell">Email</th>
-                                <th class="p-4 text-left text-[#4B2E5E] font-semibold hidden lg:table-cell">Created</th>
-                                <th class="p-4 text-left text-[#4B2E5E] font-semibold hidden lg:table-cell">Last Login</th>
-                                <th class="p-4 text-left text-[#4B2E5E] font-semibold">Status</th>
-                                <th class="p-4 text-left text-[#4B2E5E] font-semibold">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="users-table-body">
-                            <!-- Users will be populated here -->
-                        </tbody>
-                    </table>
-                </div>
-                
-                <!-- Pagination -->
-                <div class="p-4 border-t border-white border-opacity-20 flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
-                    <p id="page-info" class="text-sm text-[#4B2E5E] opacity-70">Page 1 of 1</p>
-                    <div class="flex space-x-2">
-                        <button id="prev-page" class="px-3 py-1 bg-white bg-opacity-20 text-[#4B2E5E] rounded hover:bg-opacity-30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                            <i class="fas fa-chevron-left"></i>
-                        </button>
-                        <button id="next-page" class="px-3 py-1 bg-white bg-opacity-20 text-[#4B2E5E] rounded hover:bg-opacity-30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                            <i class="fas fa-chevron-right"></i>
-                        </button>
-                    </div>
-                </div>
+            
+    
+            <div id="loading-state" class="text-center py-12">
+                <div class="loading-spinner mx-auto mb-4"></div>
+                <p class="text-[#4B2E5E] font-semibold">Loading users...</p>
             </div>
-        </div>
+            
 
-        <!-- Analytics Section -->
-        <div id="analytics-section" class="section analytics-section">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <!-- User Activity Chart -->
-                <div class="chart-container">
-                    <h3 class="chart-title">User Activity Distribution</h3>
-                    <div class="chart-wrapper">
-                        <canvas id="userActivityChart"></canvas>
-                    </div>
-                </div>
-                
-                <!-- Profile Completion Chart -->
-                <div class="chart-container">
-                    <h3 class="chart-title">Profile Completion Status</h3>
-                    <div class="chart-wrapper">
-                        <canvas id="profileCompletionChart"></canvas>
-                    </div>
-                </div>
-                
-                <!-- User Registration Trends -->
-                <div class="chart-container">
-                    <h3 class="chart-title">User Registration Trends</h3>
-                    <div class="chart-wrapper">
-                        <canvas id="registrationTrendsChart"></canvas>
-                    </div>
-                </div>
-                
-                <!-- Daily Login Activity -->
-                <div class="chart-container">
-                    <h3 class="chart-title">Daily Login Activity</h3>
-                    <div class="chart-wrapper">
-                        <canvas id="loginActivityChart"></canvas>
-                    </div>
-                </div>
+            <div id="empty-state" class="text-center py-12 hidden">
+                <i class="fas fa-users text-6xl text-[#4B2E5E] opacity-30 mb-4"></i>
+                <p class="text-[#4B2E5E] font-semibold">No users found</p>
             </div>
-        </div>
+        </section>
 
-        <!-- Added complete review management section -->
-        <!-- Review Management Section -->
-        <div id="reviews-section" class="section analytics-section">
-            <div class="admin-table rounded-2xl overflow-hidden mb-8">
-                <div class="p-6 border-b border-white border-opacity-20">
-                    <div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
-                        <h2 class="text-xl font-bold text-[#4B2E5E]">Review Management</h2>
-                        <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
-                            <input type="text" id="search-reviews" placeholder="Search reviews..." 
-                                   class="search-box rounded-lg px-4 py-2 text-[#4B2E5E] placeholder-[#4B2E5E] placeholder-opacity-50 outline-none">
-                            <select id="filter-rating" class="search-box rounded-lg px-4 py-2 text-[#4B2E5E] outline-none">
-                                <option value="">All Ratings</option>
-                                <option value="5">5 Stars</option>
-                                <option value="4">4 Stars</option>
-                                <option value="3">3 Stars</option>
-                                <option value="2">2 Stars</option>
-                                <option value="1">1 Star</option>
-                            </select>
-                            <button onclick="loadReviews()" class="bg-gradient-to-r from-[#A94EBD] to-[#4B2E5E] text-white px-4 py-2 rounded-lg hover:shadow-lg transition-all">
-                                <i class="fas fa-sync-alt mr-2"></i>Refresh
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Review Statistics -->
-                <div class="p-6 border-b border-white border-opacity-20">
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                        <div class="text-center">
-                            <p class="text-2xl font-bold text-[#4B2E5E]" id="total-reviews">0</p>
-                            <p class="text-sm text-[#4B2E5E] opacity-70">Total Reviews</p>
-                        </div>
-                        <div class="text-center">
-                            <p class="text-2xl font-bold text-[#4B2E5E]" id="average-rating">0.0</p>
-                            <p class="text-sm text-[#4B2E5E] opacity-70">Average Rating</p>
-                        </div>
-                        <div class="text-center">
-                            <p class="text-2xl font-bold text-[#4B2E5E]" id="five-star-reviews">0</p>
-                            <p class="text-sm text-[#4B2E5E] opacity-70">5-Star Reviews</p>
-                        </div>
-                        <div class="text-center">
-                            <p class="text-2xl font-bold text-[#4B2E5E]" id="recent-reviews">0</p>
-                            <p class="text-sm text-[#4B2E5E] opacity-70">This Week</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Loading State for Reviews -->
-                <div id="reviews-loading-state" class="p-8 text-center">
-                    <div class="loading-spinner mx-auto mb-4"></div>
-                    <p class="text-[#4B2E5E] opacity-70">Loading reviews...</p>
-                </div>
-                
-                <!-- Empty State for Reviews -->
-                <div id="reviews-empty-state" class="p-8 text-center hidden">
-                    <i class="fas fa-star text-6xl text-[#4B2E5E] opacity-30 mb-4"></i>
-                    <h3 class="text-xl font-bold text-[#4B2E5E] mb-2">No Reviews Found</h3>
-                    <p class="text-[#4B2E5E] opacity-70">No reviews match your search criteria.</p>
-                </div>
-                
-                <!-- Reviews Table -->
-                <div id="reviews-table-container" class="table-responsive hidden">
-                    <table class="w-full">
-                        <thead class="table-header">
-                            <tr>
-                                <th class="p-4 text-left text-[#4B2E5E] font-semibold">User</th>
-                                <th class="p-4 text-left text-[#4B2E5E] font-semibold">Rating</th>
-                                <th class="p-4 text-left text-[#4B2E5E] font-semibold">Review</th>
-                                <th class="p-4 text-left text-[#4B2E5E] font-semibold hidden md:table-cell">Date</th>
-                                <th class="p-4 text-left text-[#4B2E5E] font-semibold">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="reviews-table-body">
-                            <!-- Reviews will be populated here -->
-                        </tbody>
-                    </table>
-                </div>
-                
-                <!-- Reviews Pagination -->
-                <div class="p-4 border-t border-white border-opacity-20 flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
-                    <p id="reviews-page-info" class="text-sm text-[#4B2E5E] opacity-70">Page 1 of 1</p>
-                    <div class="flex space-x-2">
-                        <button id="reviews-prev-page" class="px-3 py-1 bg-white bg-opacity-20 text-[#4B2E5E] rounded hover:bg-opacity-30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                            <i class="fas fa-chevron-left"></i>
-                        </button>
-                        <button id="reviews-next-page" class="px-3 py-1 bg-white bg-opacity-20 text-[#4B2E5E] rounded hover:bg-opacity-30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                            <i class="fas fa-chevron-right"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <!-- User Details Modal -->
-    <div id="user-modal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 invisible opacity-0 z-50">
-        <div class="glass rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-            <div class="p-6 border-b border-white border-opacity-20 flex items-center justify-between">
-                <h3 class="text-xl font-bold text-[#4B2E5E]">User Details</h3>
-                <button onclick="closeModal()" class="text-[#4B2E5E] hover:text-[#A94EBD] transition-colors">
-                    <i class="fas fa-times text-xl"></i>
+        <section class="flex justify-center items-center space-x-4" id="pagination-section">
+            <button id="prev-page" class="glass px-4 py-2 rounded-lg text-[#4B2E5E] hover:bg-[#A94EBD] hover:text-white transition-all disabled:opacity-50" disabled>
+                <i class="fas fa-chevron-left mr-2"></i>Previous
+            </button>
+            <span id="page-info" class="text-[#4B2E5E] font-semibold">Page 1 of 1</span>
+            <button id="next-page" class="glass px-4 py-2 rounded-lg text-[#4B2E5E] hover:bg-[#A94EBD] hover:text-white transition-all disabled:opacity-50" disabled>
+                Next<i class="fas fa-chevron-right ml-2"></i>
+            </button>
+        </section>
+    </main>
+
+ 
+    <div id="user-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 modal opacity-0 invisible p-4">
+        <div class="glass rounded-2xl p-6 md:p-8 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl md:text-2xl font-semibold text-[#4B2E5E]">User Details</h3>
+                <button id="close-user-modal" class="text-[#4B2E5E] hover:text-[#A94EBD] text-2xl transition-colors">
+                    <i class="fas fa-times"></i>
                 </button>
             </div>
-            <div id="user-detail-content" class="p-6">
-                <!-- User details will be populated here -->
+            
+            <div id="user-detail-content">
+                
             </div>
         </div>
     </div>
 
-    <!-- Added review edit modal -->
-    <!-- Review Edit Modal -->
-    <div id="review-modal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 invisible opacity-0 z-50">
-        <div class="glass rounded-2xl max-w-2xl w-full">
-            <div class="p-6 border-b border-white border-opacity-20 flex items-center justify-between">
-                <h3 class="text-xl font-bold text-[#4B2E5E]">Edit Review</h3>
-                <button onclick="closeReviewModal()" class="text-[#4B2E5E] hover:text-[#A94EBD] transition-colors">
-                    <i class="fas fa-times text-xl"></i>
-                </button>
-            </div>
-            <div class="p-6">
-                <form id="edit-review-form">
-                    <input type="hidden" id="edit-review-id">
-                    <div class="mb-4">
-                        <label class="block text-[#4B2E5E] font-semibold mb-2">Rating</label>
-                        <select id="edit-review-rating" class="w-full search-box rounded-lg px-4 py-2 text-[#4B2E5E] outline-none">
-                            <option value="1">1 Star</option>
-                            <option value="2">2 Stars</option>
-                            <option value="3">3 Stars</option>
-                            <option value="4">4 Stars</option>
-                            <option value="5">5 Stars</option>
-                        </select>
-                    </div>
-                    <div class="mb-6">
-                        <label class="block text-[#4B2E5E] font-semibold mb-2">Review Text</label>
-                        <textarea id="edit-review-text" rows="4" class="w-full search-box rounded-lg px-4 py-2 text-[#4B2E5E] outline-none resize-none" placeholder="Enter review text..."></textarea>
-                    </div>
-                    <div class="flex space-x-4">
-                        <button type="submit" class="flex-1 bg-gradient-to-r from-[#A94EBD] to-[#4B2E5E] text-white px-6 py-2 rounded-lg hover:shadow-lg transition-all">
-                            <i class="fas fa-save mr-2"></i>Save Changes
-                        </button>
-                        <button type="button" onclick="closeReviewModal()" class="flex-1 bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600 transition-colors">
-                            Cancel
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
+   
+    <div id="toast-container" class="fixed top-4 right-4 space-y-2 z-50">
+        
     </div>
-
-    <!-- Toast Container -->
-    <div id="toast-container" class="fixed top-4 right-4 z-50 space-y-2"></div>
 
     <script>
-        // Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyBOoMgr_8nkxwOF8ZjLqKqX8Z8Z8Z8Z8Z8Z8",
-            authDomain: "life-app-12345.firebaseapp.com",
-            projectId: "life-app-12345",
-            storageBucket: "life-app-12345.appspot.com",
-            messagingSenderId: "123456789012",
-            appId: "1:123456789012:web:abcdef123456789012345"
-        };
+        document.addEventListener('DOMContentLoaded', function() {
 
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
+            const auth = firebase.auth();
+            const db = firebase.firestore();
+            
 
-        const ADMIN_EMAILS = [
-            "tecnogasafamage@gmail.com",
-            "lifeassistant60@gmail.com",
-            "solodeveloperr.lk@gmail.com"
-        ];
+            let users = [];
+            let filteredUsers = [];
+            let currentPage = 1;
+            const usersPerPage = 10;
+            let currentUser = null;
+            
 
-        let isAdminUser = false;
-        let currentUser = null;
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const mobileMenuClose = document.getElementById('mobile-menu-close');
+            const adminLogoutBtn = document.getElementById('admin-logout-btn');
+            const mobileAdminLogout = document.getElementById('mobile-admin-logout');
+            const searchUsers = document.getElementById('search-users');
+            const filterStatus = document.getElementById('filter-status');
+            const refreshData = document.getElementById('refresh-data');
+            const usersTableBody = document.getElementById('users-table-body');
+            const loadingState = document.getElementById('loading-state');
+            const emptyState = document.getElementById('empty-state');
+            const userModal = document.getElementById('user-modal');
+            const closeUserModal = document.getElementById('close-user-modal');
+            const userDetailContent = document.getElementById('user-detail-content');
+            const toastContainer = document.getElementById('toast-container');
+            const prevPageBtn = document.getElementById('prev-page');
+            const nextPageBtn = document.getElementById('next-page');
+            const pageInfo = document.getElementById('page-info');
+            
 
-        // Global variables
-        let allUsers = [];
-        let filteredUsers = [];
-        let currentPage = 1;
-        const usersPerPage = 10;
+            const totalUsersEl = document.getElementById('total-users');
+            const newUsersTodayEl = document.getElementById('new-users-today');
+            const activeUsersEl = document.getElementById('active-users');
+            const completeProfilesEl = document.getElementById('complete-profiles');
+            
 
-        let allReviews = [];
-        let filteredReviews = [];
-        let currentReviewPage = 1;
-        const reviewsPerPage = 10;
-
-        // DOM elements
-        let usersTableBody, searchInput, prevPageBtn, nextPageBtn, pageInfo;
-        let loadingState, emptyState, userModal, userDetailContent;
-        let mobileMenuButton, mobileMenuClose, mobileMenu;
-
-        let reviewsTableBody, searchReviewsInput, filterRatingSelect;
-        let reviewsPrevPageBtn, reviewsNextPageBtn, reviewsPageInfo;
-        let reviewsLoadingState, reviewsEmptyState, reviewModal;
-
-        function initializeDOMElements() {
-            try {
-                // User management elements
-                usersTableBody = document.getElementById('users-table-body');
-                searchInput = document.getElementById('search-users');
-                prevPageBtn = document.getElementById('prev-page');
-                nextPageBtn = document.getElementById('next-page');
-                pageInfo = document.getElementById('page-info');
-                loadingState = document.getElementById('loading-state');
-                emptyState = document.getElementById('empty-state');
-                userModal = document.getElementById('user-modal');
-                userDetailContent = document.getElementById('user-detail-content');
-
-                // Mobile menu elements
-                mobileMenuButton = document.getElementById('mobile-menu-button');
-                mobileMenuClose = document.getElementById('mobile-menu-close');
-                mobileMenu = document.getElementById('mobile-menu');
-
-                // Review management elements
-                reviewsTableBody = document.getElementById('reviews-table-body');
-                searchReviewsInput = document.getElementById('search-reviews');
-                filterRatingSelect = document.getElementById('filter-rating');
-                reviewsPrevPageBtn = document.getElementById('reviews-prev-page');
-                reviewsNextPageBtn = document.getElementById('reviews-next-page');
-                reviewsPageInfo = document.getElementById('reviews-page-info');
-                reviewsLoadingState = document.getElementById('reviews-loading-state');
-                reviewsEmptyState = document.getElementById('reviews-empty-state');
-                reviewModal = document.getElementById('review-modal');
-
-                console.log('[v0] DOM elements initialized successfully');
-            } catch (error) {
-                console.error('[v0] Error initializing DOM elements:', error);
-            }
-        }
-
-        // Setup event listeners
-        function setupEventListeners() {
-            // User management event listeners
-            if (searchInput) {
-                searchInput.addEventListener('input', filterUsers);
-            }
-            if (prevPageBtn) {
-                prevPageBtn.addEventListener('click', () => {
-                    if (currentPage > 1) {
-                        currentPage--;
-                        displayUsers();
-                    }
-                });
-            }
-            if (nextPageBtn) {
-                nextPageBtn.addEventListener('click', () => {
-                    const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
-                    if (currentPage < totalPages) {
-                        currentPage++;
-                        displayUsers();
-                    }
-                });
-            }
-
-            // Mobile menu event listeners
-            if (mobileMenuButton) {
-                mobileMenuButton.addEventListener('click', () => {
-                    mobileMenu.classList.add('active');
-                });
-            }
-            if (mobileMenuClose) {
-                mobileMenuClose.addEventListener('click', () => {
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            });
+            
+            mobileMenuClose.addEventListener('click', () => {
+                mobileMenu.classList.remove('active');
+                document.body.style.overflow = '';
+            });
+            
+            mobileMenu.addEventListener('click', (e) => {
+                if (e.target === mobileMenu) {
                     mobileMenu.classList.remove('active');
-                });
-            }
-            if (mobileMenu) {
-                mobileMenu.addEventListener('click', (e) => {
-                    if (e.target === mobileMenu) {
-                        mobileMenu.classList.remove('active');
-                    }
-                });
-            }
-
-            if (searchReviewsInput) {
-                searchReviewsInput.addEventListener('input', filterReviews);
-            }
-            if (filterRatingSelect) {
-                filterRatingSelect.addEventListener('change', filterReviews);
-            }
-            if (reviewsPrevPageBtn) {
-                reviewsPrevPageBtn.addEventListener('click', () => {
-                    if (currentReviewPage > 1) {
-                        currentReviewPage--;
-                        displayReviews();
-                    }
-                });
-            }
-            if (reviewsNextPageBtn) {
-                reviewsNextPageBtn.addEventListener('click', () => {
-                    const totalPages = Math.ceil(filteredReviews.length / reviewsPerPage);
-                    if (currentReviewPage < totalPages) {
-                        currentReviewPage++;
-                        displayReviews();
-                    }
-                });
-            }
-
-            // Edit review form submission
-            const editReviewForm = document.getElementById('edit-review-form');
-            if (editReviewForm) {
-                editReviewForm.addEventListener('submit', handleEditReview);
-            }
-        }
-
-        // Initialize navigation
-        function initializeNavigation() {
-            const navButtons = document.querySelectorAll('.nav-btn');
-            const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
-            const sections = document.querySelectorAll('.section');
-
-            function showSection(sectionId) {
-                // Hide all sections
-                sections.forEach(section => {
-                    section.classList.remove('active');
-                });
-
-                // Show selected section
-                const targetSection = document.getElementById(sectionId + '-section');
-                if (targetSection) {
-                    targetSection.classList.add('active');
+                    document.body.style.overflow = '';
                 }
-
-                // Update navigation buttons
-                navButtons.forEach(btn => {
-                    btn.classList.remove('active');
-                });
-                mobileNavLinks.forEach(link => {
-                    link.classList.remove('active');
-                });
-
-                // Add active class to clicked button/link
-                const activeNavBtn = document.querySelector(`.nav-btn[data-section="${sectionId}"]`);
-                const activeMobileLink = document.querySelector(`.mobile-nav-link[data-section="${sectionId}"]`);
-                
-                if (activeNavBtn) activeNavBtn.classList.add('active');
-                if (activeMobileLink) activeMobileLink.classList.add('active');
-
-                // Close mobile menu
-                if (mobileMenu) {
-                    mobileMenu.classList.remove('active');
-                }
-
-                // Initialize charts if analytics section is shown
-                if (sectionId === 'analytics') {
-                    setTimeout(initializeCharts, 100);
-                }
-
-                if (sectionId === 'reviews') {
-                    loadReviews();
-                }
-            }
-
-            // Add click listeners to navigation buttons
-            navButtons.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const sectionId = btn.getAttribute('data-section');
-                    showSection(sectionId);
-                });
             });
+            
 
-            mobileNavLinks.forEach(link => {
-                link.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const sectionId = link.getAttribute('data-section');
-                    showSection(sectionId);
-                });
+            adminLogoutBtn.addEventListener('click', () => {
+                auth.signOut();
             });
-        }
-
-        function initializeAuth() {
-            // Enable offline persistence
-            db.enablePersistence().catch((err) => {
-                console.log('[v0] Persistence error:', err);
+            
+            mobileAdminLogout.addEventListener('click', () => {
+                mobileMenu.classList.remove('active');
+                document.body.style.overflow = '';
+                auth.signOut();
             });
+            
 
-            auth.onAuthStateChanged(async (user) => {
-                try {
-                    if (user) {
-                        currentUser = user;
-                        isAdminUser = ADMIN_EMAILS.includes(user.email);
-                        
-                        if (isAdminUser) {
-                            console.log('[v0] Admin user authenticated:', user.email);
-                            
-                            // Show loading state
-                            showToast('Loading admin dashboard...', 'info');
-                            
-                            // Load data with error handling
-                            try {
-                                await Promise.all([
-                                    loadUsers(),
-                                    loadReviews()
-                                ]);
-                                initializeCharts();
-                                showToast('Dashboard loaded successfully!', 'success');
-                            } catch (error) {
-                                console.error('[v0] Error loading dashboard data:', error);
-                                showToast('Error loading dashboard data. Please refresh.', 'error');
-                            }
+            searchUsers.addEventListener('input', filterUsers);
+            filterStatus.addEventListener('change', filterUsers);
+            refreshData.addEventListener('click', loadUsers);
+            
+
+            prevPageBtn.addEventListener('click', () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    renderUsers();
+                }
+            });
+            
+            nextPageBtn.addEventListener('click', () => {
+                const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    renderUsers();
+                }
+            });
+            
+
+            closeUserModal.addEventListener('click', closeModal);
+            userModal.addEventListener('click', (e) => {
+                if (e.target === userModal) {
+                    closeModal();
+                }
+            });
+            
+
+            auth.onAuthStateChanged(user => {
+                if (user) {
+                    currentUser = user;
+                    document.getElementById('admin-name').textContent = user.displayName || user.email.split('@')[0];
+                    
+    
+                    checkAdminAccess().then(hasAccess => {
+                        if (hasAccess) {
+                            loadUsers();
                         } else {
-                            console.log('[v0] Non-admin user detected:', user.email);
-                            showToast('Access denied. Admin privileges required.', 'error');
-                            setTimeout(() => {
-                                auth.signOut().then(() => {
-                                    window.location.href = 'login.html';
-                                });
-                            }, 3000);
+                            showToast('Admin access required. Please contact administrator.', 'error');
+                            showAdminAccessError();
                         }
-                    } else {
-                        console.log('[v0] No user authenticated, redirecting to login...');
-                        // Clear any cached data
-                        allUsers = [];
-                        filteredUsers = [];
-                        allReviews = [];
-                        filteredReviews = [];
-                        
-                        // Redirect to login
-                        setTimeout(() => {
-                            window.location.href = 'login.html';
-                        }, 1000);
-                    }
-                } catch (error) {
-                    console.error('[v0] Authentication error:', error);
-                    showToast('Authentication error. Please try again.', 'error');
-                    setTimeout(() => {
-                        window.location.href = 'login.html';
-                    }, 2000);
+                    });
+                } else {
+        
+                    window.location.href = 'login.html';
                 }
             });
-        }
+            
 
-        async function loadUsers() {
-            if (!usersLoadingState || !usersTableBody) {
-                console.error('[v0] Users DOM elements not found');
-                return;
-            }
+            async function loadUsers() {
+                showLoading(true);
+                try {
 
-            try {
-                usersLoadingState.style.display = 'block';
-                usersTableBody.innerHTML = '';
+                    if (!currentUser) {
+                        throw new Error('User not authenticated');
+                    }
+                    
 
-                const usersSnapshot = await db.collection('users').orderBy('createdAt', 'desc').get();
-                allUsers = [];
-
-                if (usersSnapshot.empty) {
-                    console.log('[v0] No users found in database');
-                    usersTableBody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-gray-500">No users found</td></tr>';
-                    return;
-                }
-
-                usersSnapshot.forEach((doc) => {
-                    const userData = doc.data();
-                    allUsers.push({
-                        id: doc.id,
-                        ...userData,
-                        createdAt: userData.createdAt?.toDate() || new Date()
-                    });
-                });
-
-                filteredUsers = [...allUsers];
-                displayUsers();
-                updateUserStats();
-                console.log('[v0] Users loaded successfully:', allUsers.length);
-
-            } catch (error) {
-                console.error('[v0] Error loading users:', error);
-                showToast('Error loading users: ' + error.message, 'error');
-                usersTableBody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-red-500">Error loading users</td></tr>';
-            } finally {
-                if (usersLoadingState) {
-                    usersLoadingState.style.display = 'none';
-                }
-            }
-        }
-
-        async function loadReviews() {
-            if (!reviewsLoadingState || !reviewsTableBody) {
-                console.error('[v0] Reviews DOM elements not found');
-                return;
-            }
-
-            try {
-                reviewsLoadingState.style.display = 'block';
-                reviewsTableBody.innerHTML = '';
-
-                const reviewsSnapshot = await db.collection('reviews').orderBy('createdAt', 'desc').get();
-                allReviews = [];
-
-                if (reviewsSnapshot.empty) {
-                    console.log('[v0] No reviews found in database');
-                    reviewsTableBody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-gray-500">No reviews found</td></tr>';
-                    return;
-                }
-
-                // Load user data for each review
-                const userPromises = [];
-                const reviewsData = [];
-
-                reviewsSnapshot.forEach((doc) => {
-                    const reviewData = doc.data();
-                    reviewsData.push({
-                        id: doc.id,
-                        ...reviewData,
-                        createdAt: reviewData.createdAt?.toDate() || new Date()
+                    const snapshot = await db.collection('users').get();
+                    users = [];
+                    
+                    snapshot.forEach(doc => {
+                        const userData = doc.data();
+                        users.push({
+                            id: doc.id,
+                            uid: userData.uid || doc.id,
+                            name: userData.name || 'Unknown',
+                            email: userData.email || 'No email',
+                            createdAt: userData.createdAt,
+                            lastLogin: userData.lastLogin,
+                            profileComplete: userData.profileComplete || false,
+                            ...userData
+                        });
                     });
                     
-                    if (reviewData.userId) {
-                        userPromises.push(
-                            db.collection('users').doc(reviewData.userId).get()
-                        );
+            
+                    users.sort((a, b) => {
+                        const aTime = a.createdAt ? (a.createdAt.toDate ? a.createdAt.toDate() : new Date(a.createdAt)) : new Date(0);
+                        const bTime = b.createdAt ? (b.createdAt.toDate ? b.createdAt.toDate() : new Date(b.createdAt)) : new Date(0);
+                        return bTime - aTime;
+                    });
+                    
+                    filteredUsers = [...users];
+                    currentPage = 1;
+                    updateStats();
+                    renderUsers();
+                    showToast('Users loaded successfully', 'success');
+                } catch (error) {
+                    console.error('Error loading users:', error);
+                    
+                    if (error.code === 'permission-denied') {
+                        showToast('Access denied. Please check Firestore security rules.', 'error');
+                        showPermissionError();
+                    } else if (error.message.includes('Missing or insufficient permissions')) {
+                        showToast('Insufficient permissions. Please update Firestore rules.', 'error');
+                        showPermissionError();
+                    } else {
+                        showToast('Error loading users: ' + error.message, 'error');
                     }
-                });
-
-                // Wait for all user data to load
-                const userSnapshots = await Promise.all(userPromises);
-                const usersMap = {};
+                } finally {
+                    showLoading(false);
+                }
+            }
+            
+        
+            function filterUsers() {
+                const searchTerm = searchUsers.value.toLowerCase();
+                const statusFilter = filterStatus.value;
                 
-                userSnapshots.forEach((userDoc, index) => {
-                    if (userDoc.exists) {
-                        usersMap[reviewsData[index].userId] = userDoc.data();
+                filteredUsers = users.filter(user => {
+                    const matchesSearch = user.name.toLowerCase().includes(searchTerm) || 
+                                        user.email.toLowerCase().includes(searchTerm);
+                    
+                    let matchesStatus = true;
+                    if (statusFilter === 'active') {
+                        matchesStatus = isUserActive(user);
+                    } else if (statusFilter === 'inactive') {
+                        matchesStatus = !isUserActive(user);
+                    } else if (statusFilter === 'complete') {
+                        matchesStatus = user.profileComplete;
+                    } else if (statusFilter === 'incomplete') {
+                        matchesStatus = !user.profileComplete;
                     }
+                    
+                    return matchesSearch && matchesStatus;
                 });
+                
+                currentPage = 1;
+                renderUsers();
+            }
+            
+        
+            function isUserActive(user) {
+                if (!user.lastLogin) return false;
+                const lastLogin = user.lastLogin.toDate ? user.lastLogin.toDate() : new Date(user.lastLogin);
+                const thirtyDaysAgo = new Date();
+                thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+                return lastLogin > thirtyDaysAgo;
+            }
+            
+    
+            function updateStats() {
+                const totalUsers = users.length;
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                
+                const newUsersToday = users.filter(user => {
+                    if (!user.createdAt) return false;
+                    const createdDate = user.createdAt.toDate ? user.createdAt.toDate() : new Date(user.createdAt);
+                    return createdDate >= today;
+                }).length;
+                
+                const activeUsers = users.filter(isUserActive).length;
+                const completeProfiles = users.filter(user => user.profileComplete).length;
+                
+                totalUsersEl.textContent = totalUsers;
+                newUsersTodayEl.textContent = newUsersToday;
+                activeUsersEl.textContent = activeUsers;
+                completeProfilesEl.textContent = completeProfiles;
+                
+            
+                document.getElementById('active-users-percentage').textContent = 
+                    totalUsers > 0 ? Math.round((activeUsers / totalUsers) * 100) + '%' : '0%';
+                document.getElementById('complete-profiles-percentage').textContent = 
+                    totalUsers > 0 ? Math.round((completeProfiles / totalUsers) * 100) + '%' : '0%';
+            }
+            
+   
+            function renderUsers() {
+                const startIndex = (currentPage - 1) * usersPerPage;
+                const endIndex = startIndex + usersPerPage;
+                const paginatedUsers = filteredUsers.slice(startIndex, endIndex);
+                
+                if (paginatedUsers.length === 0) {
+                    usersTableBody.innerHTML = '';
+                    emptyState.classList.remove('hidden');
+                    document.querySelector('.table-responsive').classList.add('hidden');
+                } else {
+                    emptyState.classList.add('hidden');
+                    document.querySelector('.table-responsive').classList.remove('hidden');
+                    
+                    usersTableBody.innerHTML = paginatedUsers.map(user => {
+                        const isActive = isUserActive(user);
+                        const createdDate = user.createdAt ? 
+                            (user.createdAt.toDate ? user.createdAt.toDate() : new Date(user.createdAt)).toLocaleDateString() : 
+                            'Unknown';
+                        const lastLoginDate = user.lastLogin ? 
+                            (user.lastLogin.toDate ? user.lastLogin.toDate() : new Date(user.lastLogin)).toLocaleDateString() : 
+                            'Never';
+                        
+                        return `
+                            <tr class="table-row">
+                                <td class="p-4">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="bg-gradient-to-br from-[#A94EBD] to-[#4B2E5E] rounded-full w-10 h-10 flex items-center justify-center">
+                                            <span class="text-white font-semibold">${user.name.charAt(0).toUpperCase()}</span>
+                                        </div>
+                                        <div>
+                                            <p class="font-semibold text-[#4B2E5E]">${user.name}</p>
+                                            <p class="text-xs text-[#4B2E5E] opacity-70 md:hidden">${user.email}</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="p-4 hidden md:table-cell">
+                                    <p class="text-sm text-[#4B2E5E]">${user.email}</p>
+                                </td>
+                                <td class="p-4 hidden lg:table-cell">
+                                    <p class="text-sm text-[#4B2E5E]">${createdDate}</p>
+                                </td>
+                                <td class="p-4 hidden lg:table-cell">
+                                    <p class="text-sm text-[#4B2E5E]">${lastLoginDate}</p>
+                                </td>
+                                <td class="p-4">
+                                    <div class="flex flex-col space-y-1">
+                                        <span class="status-badge ${isActive ? 'status-active' : 'status-inactive'}">
+                                            ${isActive ? 'Active' : 'Inactive'}
+                                        </span>
+                                        <span class="status-badge ${user.profileComplete ? 'status-active' : 'status-inactive'}">
+                                            ${user.profileComplete ? 'Complete' : 'Incomplete'}
+                                        </span>
+                                    </div>
+                                </td>
+                                <td class="p-4">
+                                    <button onclick="viewUserDetails('${user.id}')" class="bg-[#A94EBD] text-white px-3 py-1 rounded-lg text-sm hover:bg-[#4B2E5E] transition-colors">
+                                        <i class="fas fa-eye mr-1"></i>View
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+                }
+                
+                updatePagination();
+            }
+            
 
-                // Combine review and user data
-                allReviews = reviewsData.map(review => ({
-                    ...review,
-                    userName: usersMap[review.userId]?.name || 'Unknown User',
-                    userEmail: usersMap[review.userId]?.email || 'No email'
-                }));
+            function updatePagination() {
+                const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
+                pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+                
+                prevPageBtn.disabled = currentPage === 1;
+                nextPageBtn.disabled = currentPage === totalPages || totalPages === 0;
+            }
+            
 
-                filteredReviews = [...allReviews];
-                displayReviews();
-                updateReviewStats();
-                console.log('[v0] Reviews loaded successfully:', allReviews.length);
+            window.viewUserDetails = function(userId) {
+                const user = users.find(u => u.id === userId);
+                if (!user) return;
+                
+                const createdDate = user.createdAt ? 
+                    (user.createdAt.toDate ? user.createdAt.toDate() : new Date(user.createdAt)).toLocaleString() : 
+                    'Unknown';
+                const lastLoginDate = user.lastLogin ? 
+                    (user.lastLogin.toDate ? user.lastLogin.toDate() : new Date(user.lastLogin)).toLocaleString() : 
+                    'Never logged in';
+                
+                userDetailContent.innerHTML = `
+                    <div class="space-y-6">
+                        <div class="flex items-center space-x-4">
+                            <div class="bg-gradient-to-br from-[#A94EBD] to-[#4B2E5E] rounded-full w-16 h-16 flex items-center justify-center">
+                                <span class="text-white font-bold text-2xl">${user.name.charAt(0).toUpperCase()}</span>
+                            </div>
+                            <div>
+                                <h4 class="text-xl font-bold text-[#4B2E5E]">${user.name}</h4>
+                                <p class="text-[#4B2E5E] opacity-70">${user.email}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="glass rounded-lg p-4">
+                                <h5 class="font-semibold text-[#4B2E5E] mb-2">Account Information</h5>
+                                <div class="space-y-2 text-sm">
+                                    <div class="flex justify-between">
+                                        <span class="text-[#4B2E5E] opacity-70">User ID:</span>
+                                        <span class="text-[#4B2E5E] font-mono">${user.uid}</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-[#4B2E5E] opacity-70">Created:</span>
+                                        <span class="text-[#4B2E5E]">${createdDate}</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-[#4B2E5E] opacity-70">Last Login:</span>
+                                        <span class="text-[#4B2E5E]">${lastLoginDate}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="glass rounded-lg p-4">
+                                <h5 class="font-semibold text-[#4B2E5E] mb-2">Profile Status</h5>
+                                <div class="space-y-2">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-[#4B2E5E] opacity-70">Profile Complete:</span>
+                                        <span class="status-badge ${user.profileComplete ? 'status-active' : 'status-inactive'}">
+                                            ${user.profileComplete ? 'Yes' : 'No'}
+                                        </span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-[#4B2E5E] opacity-70">Account Status:</span>
+                                        <span class="status-badge ${isUserActive(user) ? 'status-active' : 'status-inactive'}">
+                                            ${isUserActive(user) ? 'Active' : 'Inactive'}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="glass rounded-lg p-4">
+                            <h5 class="font-semibold text-[#4B2E5E] mb-2">Additional Data</h5>
+                            <pre class="text-xs text-[#4B2E5E] bg-white bg-opacity-50 rounded p-3 overflow-auto max-h-40">${JSON.stringify(user, null, 2)}</pre>
+                        </div>
+                    </div>
+                `;
+                
+                userModal.classList.remove('invisible', 'opacity-0');
+                userModal.classList.add('opacity-100');
+            };
+            
 
-            } catch (error) {
-                console.error('[v0] Error loading reviews:', error);
-                showToast('Error loading reviews: ' + error.message, 'error');
-                reviewsTableBody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-red-500">Error loading reviews</td></tr>';
-            } finally {
-                if (reviewsLoadingState) {
-                    reviewsLoadingState.style.display = 'none';
+            function closeModal() {
+                userModal.classList.remove('opacity-100');
+                userModal.classList.add('opacity-0', 'invisible');
+            }
+            
+
+            function showLoading(show) {
+                if (show) {
+                    loadingState.classList.remove('hidden');
+                    document.querySelector('.table-responsive').classList.add('hidden');
+                    emptyState.classList.add('hidden');
+                } else {
+                    loadingState.classList.add('hidden');
                 }
             }
-        }
+            
 
-        function initializeCharts() {
-            try {
-                if (typeof Chart === 'undefined') {
-                    console.error('[v0] Chart.js not loaded');
-                    showToast('Chart library not loaded. Please refresh the page.', 'error');
-                    return;
-                }
-
-                // Initialize user activity chart
-                const userActivityCtx = document.getElementById('userActivityChart');
-                if (userActivityCtx && allUsers.length > 0) {
-                    const activeUsers = allUsers.filter(user => {
-                        const lastActive = user.lastActive?.toDate() || user.createdAt;
-                        const daysSinceActive = (new Date() - lastActive) / (1000 * 60 * 60 * 24);
-                        return daysSinceActive <= 7;
-                    }).length;
-
-                    const inactiveUsers = allUsers.length - activeUsers;
-
-                    new Chart(userActivityCtx, {
-                        type: 'pie',
-                        data: {
-                            labels: ['Active Users', 'Inactive Users'],
-                            datasets: [{
-                                data: [activeUsers, inactiveUsers],
-                                backgroundColor: ['#10B981', '#EF4444'],
-                                borderWidth: 0
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            plugins: {
-                                legend: {
-                                    position: 'bottom',
-                                    labels: { color: '#fff' }
-                                }
-                            }
+            function showToast(message, type = 'info') {
+                const toast = document.createElement('div');
+                toast.className = `glass rounded-xl p-4 mb-2 text-sm font-semibold transition-all transform translate-x-full opacity-0 shadow-lg ${
+                    type === 'success' ? 'text-green-600 border-l-4 border-green-500' : 
+                    type === 'error' ? 'text-red-600 border-l-4 border-red-500' : 
+                    'text-[#4B2E5E] border-l-4 border-[#A94EBD]'
+                }`;
+                
+                const icons = {
+                    success: 'fas fa-check-circle',
+                    error: 'fas fa-exclamation-circle',
+                    info: 'fas fa-info-circle'
+                };
+                
+                toast.innerHTML = `
+                    <div class="flex items-center space-x-2">
+                        <i class="${icons[type] || icons.info}"></i>
+                        <span>${message}</span>
+                    </div>
+                `;
+                
+                toastContainer.appendChild(toast);
+                
+                setTimeout(() => {
+                    toast.classList.remove('translate-x-full', 'opacity-0');
+                }, 100);
+                
+                setTimeout(() => {
+                    toast.classList.add('translate-x-full', 'opacity-0');
+                    setTimeout(() => {
+                        if (toast.parentNode) {
+                            toast.parentNode.removeChild(toast);
                         }
-                    });
-                }
-
-                // Initialize reviews chart
-                const reviewsCtx = document.getElementById('reviewsChart');
-                if (reviewsCtx && allReviews.length > 0) {
-                    const ratingCounts = [0, 0, 0, 0, 0];
-                    allReviews.forEach(review => {
-                        if (review.rating >= 1 && review.rating <= 5) {
-                            ratingCounts[review.rating - 1]++;
-                        }
-                    });
-
-                    new Chart(reviewsCtx, {
-                        type: 'bar',
-                        data: {
-                            labels: ['1 Star', '2 Stars', '3 Stars', '4 Stars', '5 Stars'],
-                            datasets: [{
-                                label: 'Number of Reviews',
-                                data: ratingCounts,
-                                backgroundColor: '#8B5CF6',
-                                borderRadius: 8
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            plugins: {
-                                legend: { display: false }
-                            },
-                            scales: {
-                                y: {
-                                    beginAtZero: true,
-                                    ticks: { color: '#fff' },
-                                    grid: { color: 'rgba(255,255,255,0.1)' }
-                                },
-                                x: {
-                                    ticks: { color: '#fff' },
-                                    grid: { color: 'rgba(255,255,255,0.1)' }
-                                }
-                            }
-                        }
-                    });
-                }
-
-                console.log('[v0] Charts initialized successfully');
-            } catch (error) {
-                console.error('[v0] Error initializing charts:', error);
-                showToast('Error loading charts: ' + error.message, 'error');
+                    }, 300);
+                }, 4000);
             }
-        }
-
-        // Update statistics
-        function updateStats() {
-            const totalUsers = allUsers.length;
-            const activeUsers = allUsers.filter(user => user.isActive).length;
-            const completeProfiles = allUsers.filter(user => user.profileComplete).length;
-
-            document.getElementById('total-users').textContent = totalUsers;
-            document.getElementById('active-users').textContent = activeUsers;
-            document.getElementById('complete-profiles').textContent = completeProfiles;
-        }
-
-        function initializeApp() {
-            console.log('[v0] Initializing admin panel...');
             
-            // Initialize DOM elements first
-            initializeDOMElements();
-            
-            // Setup event listeners
-            setupEventListeners();
-            
-            // Initialize navigation
-            initializeNavigation();
-            
-            // Initialize authentication (this will handle data loading)
-            initializeAuth();
-        }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            initializeApp();
+            function showPermissionError() {
+                usersTableBody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="p-8 text-center">
+                            <div class="glass rounded-2xl p-6 max-w-2xl mx-auto">
+                                <i class="fas fa-shield-alt text-6xl text-red-500 mb-4"></i>
+                                <h3 class="text-xl font-bold text-[#4B2E5E] mb-4">Firestore Permission Error</h3>
+                                <p class="text-[#4B2E5E] mb-6">
+                                    The admin dashboard cannot access the users collection due to Firestore security rules.
+                                    Please update your Firestore rules to allow admin access.
+                                </p>
+                                
+                                <div class="bg-gray-100 rounded-lg p-4 mb-4 text-left">
+                                    <h4 class="font-semibold text-[#4B2E5E] mb-2">Required Firestore Rules:</h4>
+                                    <pre class="text-xs text-gray-700 overflow-auto"><code>rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Allow users to read/write their own data
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Allow admin users to read all users (replace with your admin email)
+    match /users/{document=**} {
+      allow read: if request.auth != null && 
+        request.auth.token.email == "your-admin-email@gmail.com";
+    }
+    
+    // Allow users to manage their own events
+    match /events/{eventId} {
+      allow read, write: if request.auth != null && 
+        request.auth.uid == resource.data.userId;
+    }
+  }
+}</code></pre>
+                                </div>
+                                
+                                <div class="text-sm text-[#4B2E5E] space-y-2">
+                                    <p><strong>Steps to fix:</strong></p>
+                                    <ol class="list-decimal list-inside space-y-1 text-left">
+                                        <li>Go to Firebase Console → Firestore Database → Rules</li>
+                                        <li>Replace "your-admin-email@gmail.com" with your actual admin email</li>
+                                        <li>Click "Publish" to update the rules</li>
+                                        <li>Refresh this page</li>
+                                    </ol>
+                                </div>
+                                
+                                <button onclick="loadUsers()" class="mt-4 bg-gradient-to-r from-[#A94EBD] to-[#4B2E5E] text-white px-6 py-2 rounded-lg hover:shadow-lg transition-all">
+                                    <i class="fas fa-sync-alt mr-2"></i>Try Again
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                
+                document.querySelector('.table-responsive').classList.remove('hidden');
+                emptyState.classList.add('hidden');
+            }
+
+
+            async function checkAdminAccess() {
+                try {
+
+                    const testDoc = await db.collection('users').limit(1).get();
+                    return true;
+                } catch (error) {
+                    if (error.code === 'permission-denied') {
+                        return false;
+                    }
+                    throw error;
+                }
+            }
+
+
+            function showAdminAccessError() {
+                usersTableBody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="p-8 text-center">
+                            <div class="glass rounded-2xl p-6 max-w-lg mx-auto">
+                                <i class="fas fa-user-shield text-6xl text-orange-500 mb-4"></i>
+                                <h3 class="text-xl font-bold text-[#4B2E5E] mb-4">Admin Access Required</h3>
+                                <p class="text-[#4B2E5E] mb-4">
+                                    Your account (${currentUser.email}) does not have admin privileges.
+                                    Please contact the system administrator to grant admin access.
+                                </p>
+                                <button onclick="auth.signOut()" class="bg-red-500 text-white px-6 py-2 rounded-lg hover:bg-red-600 transition-colors">
+                                    <i class="fas fa-sign-out-alt mr-2"></i>Sign Out
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                
+                document.querySelector('.table-responsive').classList.remove('hidden');
+                emptyState.classList.add('hidden');
+            }
+            
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && userModal.classList.contains('opacity-100')) {
+                    closeModal();
+                }
+                
+                if (e.key === 'Escape' && mobileMenu.classList.contains('active')) {
+                    mobileMenu.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            });
         });
     </script>
 </body>
